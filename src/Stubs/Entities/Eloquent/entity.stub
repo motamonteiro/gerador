@@ -1,0 +1,31 @@
+<?php
+
+$NAMESPACE$
+
+use Illuminate\Database\Eloquent\Model;
+use Prettus\Repository\Traits\TransformableTrait;
+
+
+/**
+ * Class $CLASS$
+ * @package $NAMESPACE$
+ */
+class $CLASS$ extends Model
+{
+
+    use TransformableTrait;
+
+    protected $connection = '$DB_CONNECTION$';
+    protected $table = '$NOME_COMPLETO_TABELA$';
+    protected $primaryKey = '$NOME_COLUNA_PK$';
+    public $sequence = '$NOME_COMPLETO_TABELA$_seq';
+    public $timestamps = false;
+
+    protected $fillable = [
+        $COLUNAS_SEM_PK$
+    ];
+
+    $FUNCOES_BELONGS_TO$
+}
+
+

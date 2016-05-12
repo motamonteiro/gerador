@@ -1,0 +1,15 @@
+<?php
+
+$NAMESPACE$
+
+
+/**
+ * Class $CLASS$Interface
+ * @package $NAMESPACE$
+ */
+interface $CLASS$Interface extends BaseInterface
+{
+
+}
+
+

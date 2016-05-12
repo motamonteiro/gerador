@@ -1,0 +1,5 @@
+
+    public function $NOME_TABELA_FK_CAMEL_CASE_LC_FIRST$()
+    {
+        return $this->belongsTo($NOME_TABELA_FK_CAMEL_CASE$::class, '$NOME_COLUNA_FK$');
+    }

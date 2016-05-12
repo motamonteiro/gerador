@@ -1,0 +1,34 @@
+<?php
+
+$NAMESPACE$
+
+use Prettus\Repository\Contracts\RepositoryCriteriaInterface;
+use Prettus\Repository\Contracts\RepositoryInterface;
+
+interface BaseInterface extends RepositoryInterface, RepositoryCriteriaInterface
+{
+    /**
+     * Retrieve count data of repository
+     *
+     * @return int
+     */
+    public function count();
+
+    /**
+     * Find data by multiple fields
+     *
+     * @param array $where
+     * @param array $columns
+     * @return mixed
+     */
+    public function findWhereWithCondition( array $where , $columns = array('*'));
+
+    /**
+     * Build a filter for query
+     *
+     * @param array $where
+     * @param array $columns
+     * @return mixed
+     */
+    public function filter( array $where , $columns = array('*'));
+}
