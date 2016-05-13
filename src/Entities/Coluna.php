@@ -33,7 +33,7 @@ class Coluna
      */
     private $auto_increment;
 
-    public function __construct(string $campo, string $tipo, bool $nulo, string $chave, bool $auto_increment)
+    public function __construct($campo, $tipo, $nulo, $chave, $auto_increment)
     {
         $this->campo = $campo;
         $this->tipo = $tipo;
@@ -45,7 +45,7 @@ class Coluna
     /**
      * @return string
      */
-    public function getCampo(): string 
+    public function getCampo() 
     {
         return $this->campo;
     }
@@ -54,7 +54,7 @@ class Coluna
      * @param string $campo
      * @return Coluna
      */
-    public function setCampo(string $campo): Coluna
+    public function setCampo($campo)
     {
         $this->campo = $campo;
         return $this;
@@ -63,7 +63,7 @@ class Coluna
     /**
      * @return string
      */
-    public function getTipo(): string 
+    public function getTipo() 
     {
         return $this->tipo;
     }
@@ -72,7 +72,7 @@ class Coluna
      * @param string $tipo
      * @return Coluna
      */
-    public function setTipo(string $tipo): Coluna
+    public function setTipo($tipo)
     {
         $this->tipo = $tipo;
         return $this;
@@ -81,7 +81,7 @@ class Coluna
     /**
      * @return boolean
      */
-    public function isNulo(): bool
+    public function isNulo()
     {
         return $this->nulo;
     }
@@ -90,7 +90,7 @@ class Coluna
      * @param boolean $nulo
      * @return Coluna
      */
-    public function setNulo(bool $nulo): Coluna
+    public function setNulo($nulo)
     {
         $this->nulo = $nulo;
         return $this;
@@ -99,16 +99,16 @@ class Coluna
     /**
      * @return string
      */
-    public function getChave(): string 
+    public function getChave() 
     {
         return $this->chave;
     }
 
     /**
-     * @param string $chave
+     * @param $chave
      * @return Coluna
      */
-    public function setChave(string $chave): Coluna
+    public function setChave($chave)
     {
         $this->chave = $chave;
         return $this;
@@ -117,7 +117,7 @@ class Coluna
     /**
      * @return boolean
      */
-    public function isAutoIncrement(): bool 
+    public function isAutoIncrement() 
     {
         return $this->auto_increment;
     }
@@ -126,7 +126,7 @@ class Coluna
      * @param boolean $auto_increment
      * @return Coluna
      */
-    public function setAutoIncrement(bool $auto_increment): Coluna
+    public function setAutoIncrement($auto_increment)
     {
         $this->auto_increment = $auto_increment;
         return $this;
@@ -136,7 +136,7 @@ class Coluna
      * Retorna o campo da coluna minusculo
      * @return string
      */
-    public function getCampoMinusculo(): string
+    public function getCampoMinusculo()
     {
         return strtolower($this->getCampo());
     }
@@ -145,7 +145,7 @@ class Coluna
      * Retorna o campo da coluna maiusculo
      * @return string
      */
-    public function getCampoMaiusculo(): string
+    public function getCampoMaiusculo()
     {
         return strtoupper($this->getCampo());
     }
@@ -155,7 +155,7 @@ class Coluna
      * Retorna o nome da coluna como camel case
      * @return string
      */
-    public function getCampoCamelCase(): string
+    public function getCampoCamelCase()
     {
         $nome = str_replace('_', ' ', $this->getCampo());
         $nome = ucwords(strtolower($nome));
@@ -167,7 +167,7 @@ class Coluna
      * Retorna o nome da coluna como camel case com a primeira letra minuscula
      * @return string
      */
-    public function getCampoCamelCaseLcFirst(): string
+    public function getCampoCamelCaseLcFirst()
     {
         return lcfirst($this->getCampoCamelCase());;
     }

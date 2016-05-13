@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Created by PhpStorm.
@@ -18,7 +17,7 @@ class Tabela
     protected $colunas;
     protected $tabelasEstrangeiras;
 
-    public function __construct(string $nomeCompleto = null, string $prefixo = null)
+    public function __construct($nomeCompleto = null, $prefixo = null)
     {
         $this->setNomeCompleto($nomeCompleto);
         $this->setPrefixo($prefixo);
@@ -30,7 +29,7 @@ class Tabela
     /**
      * @return string
      */
-    public function getNomeCompleto(): string
+    public function getNomeCompleto()
     {
         return $this->nomeCompleto;
     }
@@ -39,7 +38,7 @@ class Tabela
      * @param null $nomeCompleto
      * @return Tabela
      */
-    public function setNomeCompleto($nomeCompleto): Tabela
+    public function setNomeCompleto($nomeCompleto)
     {
         $this->nomeCompleto = ($nomeCompleto) ? strtoupper($nomeCompleto) : '';
         return $this;
@@ -48,7 +47,7 @@ class Tabela
     /**
      * @return string
      */
-    public function getPrefixo(): string
+    public function getPrefixo()
     {
         return $this->prefixo;
     }
@@ -57,7 +56,7 @@ class Tabela
      * @param null $prefixo
      * @return Tabela
      */
-    public function setPrefixo($prefixo): Tabela
+    public function setPrefixo($prefixo)
     {
         $this->prefixo = ($prefixo)? strtoupper($prefixo) : '';
         return $this;
@@ -66,7 +65,7 @@ class Tabela
     /**
      * @return array
      */
-    public function getColunas():array
+    public function getColunas()
     {
         return $this->colunas;
     }
@@ -75,7 +74,7 @@ class Tabela
      * @param Coluna $coluna
      * @return Tabela
      */
-    public function addColuna(Coluna $coluna): Tabela
+    public function addColuna($coluna)
     {
         $this->colunas[] = $coluna;
         return $this;
@@ -84,7 +83,7 @@ class Tabela
     /**
      * @return array
      */
-    public function getTabelasEstrangeiras():array
+    public function getTabelasEstrangeiras()
     {
         return $this->tabelasEstrangeiras;
     }
@@ -93,7 +92,7 @@ class Tabela
      * @param Tabela $tabelaEstrangeira
      * @return Tabela
      */
-    public function addTabelaEstrangeira(Tabela $tabelaEstrangeira): Tabela
+    public function addTabelaEstrangeira($tabelaEstrangeira)
     {
         $this->tabelasEstrangeiras[] = $tabelaEstrangeira;
         return $this;
@@ -103,7 +102,7 @@ class Tabela
      * Retira o prefixo que está no nomeCompleto da tabela
      * @return string
      */
-    public function getNome(): string
+    public function getNome()
     {
         if(!empty($this->prefixo)) {
             return str_replace($this->prefixo.'_', '', $this->nomeCompleto);
@@ -117,7 +116,7 @@ class Tabela
      * Retorna o nomeCompleto da tabela minusculo
      * @return string
      */
-    public function getNomeCompletoMinusculo(): string
+    public function getNomeCompletoMinusculo()
     {
         return strtolower($this->getNomeCompleto());
     }
@@ -126,7 +125,7 @@ class Tabela
      * Retorna o nomeCompleto da tabela maiusculo
      * @return string
      */
-    public function getNomeCompletoMaiusculo(): string
+    public function getNomeCompletoMaiusculo()
     {
         return strtoupper($this->getNomeCompleto());
     }    
@@ -135,7 +134,7 @@ class Tabela
      * Retorna o nome da tabela minusculo
      * @return string
      */
-    public function getNomeMinusculo(): string
+    public function getNomeMinusculo()
     {
         return strtolower($this->getNome());        
     }
@@ -144,7 +143,7 @@ class Tabela
      * Retorna o nome da tabela maiusculo
      * @return string
      */
-    public function getNomeMaiusculo(): string
+    public function getNomeMaiusculo()
     {
         return strtoupper($this->getNome());
     }
@@ -153,7 +152,7 @@ class Tabela
      * Retorna o nome da tabela como camel case
      * @return string
      */
-    public function getNomeCamelCase(): string
+    public function getNomeCamelCase()
     {
         $nome = str_replace('_', ' ', $this->getNome());
         $nome = ucwords(strtolower($nome));
@@ -165,7 +164,7 @@ class Tabela
      * Retorna o nome da tabela como camel case com a primeira letra minuscula
      * @return string
      */
-    public function getNomeCamelCaseLcFirst(): string
+    public function getNomeCamelCaseLcFirst()
     {
         return lcfirst($this->getNomeCamelCase());;
     }
@@ -174,7 +173,7 @@ class Tabela
      * Retorna o campo que contem chave igual a PRI nas colunas da tabela
      * @return string
      */
-    public function getChavePrimaria(): string
+    public function getChavePrimaria()
     {
         $colunas = $this->getColunas();        
         foreach ($colunas as $coluna) {            
@@ -189,7 +188,7 @@ class Tabela
      * Retorna a chavePrimaria da tabela minusculo
      * @return string
      */
-    public function getChavePrimariaMinusculo(): string
+    public function getChavePrimariaMinusculo()
     {
         return strtolower($this->getChavePrimaria());
     }
@@ -198,7 +197,7 @@ class Tabela
      * Retorna a chavePrimaria da tabela maiusculo
      * @return string
      */
-    public function getChavePrimariaMaiusculo(): string
+    public function getChavePrimariaMaiusculo()
     {
         return strtoupper($this->getChavePrimaria());
     }
@@ -208,7 +207,7 @@ class Tabela
      * @param string $nome
      * @return string
      */
-    public function getSingularMinusculo(string $nome): string
+    public function getSingularMinusculo($nome)
     {
         $nome = strtolower($nome);
 
@@ -237,7 +236,7 @@ class Tabela
      * Retorna o nome da tabela como camel case no singular
      * @return string
      */
-    public function getNomeCamelCaseSingular(): string
+    public function getNomeCamelCaseSingular()
     {
         $nome = $this->getSingularMinusculo($this->getNome());
         $nome = str_replace('_', ' ', $nome);
@@ -250,25 +249,43 @@ class Tabela
      * Retorna o nome da tabela como camel case com a primeira letra minuscula no singular
      * @return string
      */
-    public function getNomeCamelCaseLcFirstSingular(): string
+    public function getNomeCamelCaseLcFirstSingular()
     {
-        return lcfirst($this->getNomeCamelCaseSingular());;
+        return lcfirst($this->getNomeCamelCaseSingular());
     }
 
     /**
      * Retorna uma string com o nome dos campos da tabela que nao tem chave primaria semarados por virgula
      * @return string
      */
-    public function getColunasCamposSemPkPorVirgula():string
+    public function getColunasCamposSemPkPorVirgula()
     {
         $camposSemPk = '';
         $colunas = $this->getColunas();
         foreach ($colunas as $coluna) {
             if ($coluna->getChave() != 'PRI') {
-                $camposSemPk .= $coluna->getCampo().', ';
+                $camposSemPk .= '\''.$coluna->getCampo().'\', ';
             }
         }
         return $camposSemPk;
+    }
+
+    /**
+     * Retorna uma string com o nome dos campos da tabela que nao tem chave primaria semarados por virgula minusculo
+     * @return string
+     */
+    public function getColunasCamposSemPkPorVirgulaMinusculo()
+    {
+        return strtolower($this->getColunasCamposSemPkPorVirgula());
+    }
+
+    /**
+     * Retorna uma string com o nome dos campos da tabela que nao tem chave primaria semarados por virgula maiusculo
+     * @return string
+     */
+    public function getColunasCamposSemPkPorVirgulaMaiusculo()
+    {
+        return strtoupper($this->getColunasCamposSemPkPorVirgula());
     }
     
 }

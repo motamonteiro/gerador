@@ -70,7 +70,7 @@ $app->get('/entityEloquent', function() use ($app) {
             'DB_CONNECTION'        => $app['config']['db_connection'],
             'NOME_COMPLETO_TABELA' => $tabela->getNomeCompletoMinusculo(),
             'NOME_COLUNA_PK'       => $tabela->getChavePrimariaMinusculo(),
-            'COLUNAS_SEM_PK'       => $tabela->getColunasCamposSemPkPorVirgula(),
+            'COLUNAS_SEM_PK'       => $tabela->getColunasCamposSemPkPorVirgulaMinusculo(),
             'FUNCOES_BELONGS_TO'   => $stubFuncoesBelongsTo
         ];
 
