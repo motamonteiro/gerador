@@ -4,6 +4,7 @@
 /public/arquivos/Entities/Eloquent
 /public/arquivos/Entities/OrmSefaz
 /public/arquivos/Presenters
+/public/arquivos/Providers
 /public/arquivos/Repositories/Eloquent
 /public/arquivos/Repositories/Interfaces
 /public/arquivos/Repositories/OrmSefaz
