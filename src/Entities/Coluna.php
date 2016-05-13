@@ -19,6 +19,10 @@ class Coluna
     /**
      * @var string
      */
+    private $campoChaveEstrangeira;
+    /**
+     * @var string
+     */
     private $tipo;
     /**
      * @var bool
@@ -33,9 +37,10 @@ class Coluna
      */
     private $auto_increment;
 
-    public function __construct($campo, $tipo, $nulo, $chave, $auto_increment)
+    public function __construct($campo, $tipo, $nulo, $chave, $auto_increment, $campoChaveEstrangeira = '')
     {
         $this->campo = $campo;
+        $this->campoChaveEstrangeira = $campoChaveEstrangeira;
         $this->tipo = $tipo;
         $this->nulo = $nulo;
         $this->chave = $chave;
@@ -45,7 +50,7 @@ class Coluna
     /**
      * @return string
      */
-    public function getCampo() 
+    public function getCampo()
     {
         return $this->campo;
     }
@@ -63,7 +68,25 @@ class Coluna
     /**
      * @return string
      */
-    public function getTipo() 
+    public function getCampoChaveEstrangeira()
+    {
+        return $this->campoChaveEstrangeira;
+    }
+
+    /**
+     * @param string $campo
+     * @return Coluna
+     */
+    public function setCampoChaveEstrangeira($campoChaveEstrangeira)
+    {
+        $this->campoChaveEstrangeira = $campoChaveEstrangeira;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTipo()
     {
         return $this->tipo;
     }
@@ -99,7 +122,7 @@ class Coluna
     /**
      * @return string
      */
-    public function getChave() 
+    public function getChave()
     {
         return $this->chave;
     }
@@ -117,7 +140,7 @@ class Coluna
     /**
      * @return boolean
      */
-    public function isAutoIncrement() 
+    public function isAutoIncrement()
     {
         return $this->auto_increment;
     }
@@ -149,7 +172,7 @@ class Coluna
     {
         return strtoupper($this->getCampo());
     }
-    
+
 
     /**
      * Retorna o nome da coluna como camel case
@@ -169,9 +192,47 @@ class Coluna
      */
     public function getCampoCamelCaseLcFirst()
     {
-        return lcfirst($this->getCampoCamelCase());;
+        return lcfirst($this->getCampoCamelCase());
     }
-    
-    
+
+    /**
+     * Retorna o campo da coluna minusculo
+     * @return string
+     */
+    public function getCampoChaveEstrangeiraMinusculo()
+    {
+        return strtolower($this->getCampoChaveEstrangeira());
+    }
+
+    /**
+     * Retorna o campo da coluna maiusculo
+     * @return string
+     */
+    public function getCampoChaveEstrangeiraMaiusculo()
+    {
+        return strtoupper($this->getCampoChaveEstrangeira());
+    }
+
+
+    /**
+     * Retorna o nome da coluna como camel case
+     * @return string
+     */
+    public function getCampoChaveEstrangeiraCamelCase()
+    {
+        $nome = str_replace('_', ' ', $this->getCampoChaveEstrangeira());
+        $nome = ucwords(strtolower($nome));
+        $nome = str_replace(' ', '', $nome);
+        return $nome;
+    }
+
+    /**
+     * Retorna o nome da coluna como camel case com a primeira letra minuscula
+     * @return string
+     */
+    public function getCampoChaveEstrangeiraCamelCaseLcFirst()
+    {
+        return lcfirst($this->getCampoChaveEstrangeiraCamelCase());
+    }
 
 }

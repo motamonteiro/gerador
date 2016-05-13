@@ -1,0 +1,8 @@
+    public function get$NOME_COLUNA_CAMEL_CASE$() {
+        return $this->$NOME_COLUNA_CAMEL_CASE_LC_FIRST$;
+    }
+
+    public function set$NOME_COLUNA_CAMEL_CASE$($$NOME_COLUNA_CAMEL_CASE_LC_FIRST$) {
+        $this->$NOME_COLUNA_CAMEL_CASE_LC_FIRST$ = $$NOME_COLUNA_CAMEL_CASE_LC_FIRST$;
+    }
+

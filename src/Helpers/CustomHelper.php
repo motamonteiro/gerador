@@ -1,18 +1,29 @@
 <?php
+if (!function_exists('preencherStub')) {
+    function preencherStub($path, $nmeStub, $replaces){
+        $stub = file_get_contents($path.$nmeStub.'.stub');
+
+        foreach ($replaces as $search => $replace) {
+          $stub = str_replace('$' . strtoupper($search) . '$', $replace, $stub);
+        }
+
+        return $stub;
+    }
+}
 
 if (!function_exists('listarObjTabelas')) {
     function listarObjTabelas($app) {
 
         $nomesDasTabelas = listarTabelas($app);
         $tabelas = [];
-        
+
         foreach ($nomesDasTabelas as $nomeDaTabela) {
 
             $tabela = new \MotaMonteiro\Gerador\Entities\Tabela($nomeDaTabela, $app['config']['table_prefix']);
             $nomesDasColunas = listarColunas($app, $nomeDaTabela);
 
             foreach ($nomesDasColunas as $nomeDaColuna) {
-                
+
                 $nulo = ($nomeDaColuna['Null'] == 'NO') ? false : true;
                 $auto_increment = ($nomeDaColuna['Extra'] == 'auto_increment') ? true : false;
                 $coluna = new \MotaMonteiro\Gerador\Entities\Coluna($nomeDaColuna['Field'], $nomeDaColuna['Type'], $nulo, $nomeDaColuna['Key'], $auto_increment);
@@ -31,6 +42,7 @@ if (!function_exists('listarObjTabelas')) {
                             $nulo = ($nomeDaColunaEstrangeira['Null'] == 'NO') ? false : true;
                             $auto_increment = ($nomeDaColunaEstrangeira['Extra'] == 'auto_increment') ? true : false;
                             $colunaEstrangeira = new \MotaMonteiro\Gerador\Entities\Coluna($nomeDaColunaEstrangeira['Field'], $nomeDaColunaEstrangeira['Type'], $nulo, $nomeDaColunaEstrangeira['Key'], $auto_increment);
+                            $coluna->setCampoChaveEstrangeira($nomeDaTabelaEstrangeira['coluna']);
                             $tabelaEstrangeira->addColuna($colunaEstrangeira);
                         }
 
@@ -42,7 +54,7 @@ if (!function_exists('listarObjTabelas')) {
             }
 
             array_push($tabelas, $tabela);
-        }        
+        }
 
         return $tabelas;
     }
@@ -86,7 +98,7 @@ if (!function_exists('criarArquivo')) {
 
         $fp = fopen($caminhoFisicoDestino, "w");
         $escreve = fwrite($fp, $conteudo);
-        fclose($fp);        
+        fclose($fp);
         return true;
 
     }
