@@ -1,0 +1,5 @@
+        $this->app->bind(
+            $PATH_INTERFACE_REPOSITORY_CLASS$,
+            $PATH_REPOSITORY_CLASS$
+        );
+

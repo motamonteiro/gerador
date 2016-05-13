@@ -1,5 +1,5 @@
 
-    public function $NOME_TABELA_FK_CAMEL_CASE_LC_FIRST$()
+    public function $NOME_CLASSE_ESTRANGEIRA_CAMEL_CASE_LC_FIRST$()
     {
-        return $this->belongsTo($NOME_TABELA_FK_CAMEL_CASE$::class, '$NOME_COLUNA_FK$');
+        return $this->belongsTo($NOME_TABELA_FK_CAMEL_CASE$::class, '$NOME_COLUNA$', '$NOME_COLUNA_FK$');
     }

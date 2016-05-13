@@ -1,0 +1,36 @@
+<?php
+
+$NAMESPACE$
+
+use Illuminate\Support\ServiceProvider;
+
+
+/**
+ * Class $CLASS$RepositoryProvider
+ * @package $NAMESPACE$
+ */
+class $CLASS$RepositoryProvider extends ServiceProvider
+{
+
+    /**
+     * Bootstrap the application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        //
+    }
+
+    /**
+     * Register the application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+    $BINDS$
+    }
+}
+
+

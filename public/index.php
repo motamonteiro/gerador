@@ -9,11 +9,11 @@ $app = new Silex\Application();
 $app['config'] = [
     'db_connection' => 'oracle',
     'db_host' => '127.0.0.1',
-    'db_name' => 'itcmd',
+    'db_name' => 'german',
     'db_username' => 'root',
-    'db_password' => '1234',
-    'table_prefix' => 'itcmd',
-    'project_name' => 'Itcmd',
+    'db_password' => 'root',
+    'table_prefix' => '',
+    'project_name' => 'GerMan',
     'stub_path' =>  '../src/Stubs/',
     'destination_path' =>  __DIR__.'\\arquivos\\' //D:\web\www\gerador\public\arquivos
 
@@ -39,28 +39,36 @@ $app->get('/tabelas', function() use ($app) {
 
 $app->get('/entityEloquent', function() use ($app) {
 
+    $stub_path = $app['config']['stub_path'].'Entities/Eloquent/';
+    $destination_path = $app['config']['destination_path'].'Entities\\Eloquent\\';
+    $arquivosCriados = '';
+
     $tabelas = listarObjTabelas($app);
 
-    $arquivosCriados = '';
     foreach ($tabelas as $tabela) {
 
-        $tabelasEstrangeiras = $tabela->getTabelasEstrangeiras();
         $stubFuncoesBelongsTo = '';
 
-        foreach ($tabelasEstrangeiras as $tabelaEstrangeira) {
+        foreach ($tabela->getColunas() as $coluna) {
+            if($coluna->getChave() == "MUL"){
 
-            $stubFuncoesBelongsToAux = file_get_contents($app['config']['stub_path'].'Entities/Eloquent/_FUNCOES_BELONGS_TO.stub');
-            $replaces = [
-                'NOME_TABELA_FK_CAMEL_CASE_LC_FIRST' => $tabelaEstrangeira->getNomeCamelCaseLcFirstSingular(),
-                'NOME_TABELA_FK_CAMEL_CASE'          => $tabelaEstrangeira->getNomeCamelCaseSingular(),
-                'NOME_COLUNA_FK'                     => $tabelaEstrangeira->getChavePrimaria(),
-            ];
+                $tabelasEstrangeiras = $tabela->getTabelasEstrangeiras();
+                foreach ($tabelasEstrangeiras as $tabelaEstrangeira) {
+                    if($tabelaEstrangeira->getChavePrimariaMinusculo() == $coluna->getCampoChaveEstrangeiraMinusculo()){
+                        $nmeTabelaEstrangeira = $tabelaEstrangeira->getNomeCamelCaseSingular();
+                    }
+                }
+                
+                $replaces = [
+                    'NOME_CLASSE_ESTRANGEIRA_CAMEL_CASE_LC_FIRST' => $coluna->getNomeClasseCamelCaseLcFirst($coluna->getCampo()),
+                    'NOME_TABELA_FK_CAMEL_CASE'          => $nmeTabelaEstrangeira,
+                    'NOME_COLUNA_FK'                     => $coluna->getCampoChaveEstrangeiraMinusculo(),
+                    'NOME_COLUNA'                        => $coluna->getCampoMinusculo(),
+                ];
 
-            foreach ($replaces as $search => $replace) {
-                $stubFuncoesBelongsToAux = str_replace('$' . strtoupper($search) . '$', $replace, $stubFuncoesBelongsToAux);
+                $stubFuncoesBelongsTo .= preencherStub($stub_path, '_FUNCOES_BELONGS_TO', $replaces);
+
             }
-
-            $stubFuncoesBelongsTo .= $stubFuncoesBelongsToAux;
         }
 
         $stub = file_get_contents($app['config']['stub_path'].'Entities/Eloquent/entity.stub');
@@ -78,7 +86,7 @@ $app->get('/entityEloquent', function() use ($app) {
             $stub = str_replace('$' . strtoupper($search) . '$', $replace, $stub);
         }
 
-        $arquivo = $app['config']['destination_path'].'Entities\\Eloquent\\'.$tabela->getNomeCamelCaseSingular().'.php';
+        $arquivo = $destination_path.$tabela->getNomeCamelCaseSingular().'.php';
         criarArquivo($stub, $arquivo);
         $arquivosCriados .= $arquivo.'<br>';
 
@@ -248,5 +256,40 @@ $app->get('/repositoryInterface', function() use ($app) {
 
 });
 
+
+$app->get('/provider', function() use ($app) {
+
+    $stub_path = $app['config']['stub_path'].'Providers/';
+    $destination_path = $app['config']['destination_path'].'Providers\\';
+    $arquivosCriados = '';
+
+    $tabelas = listarObjTabelas($app);
+
+    $stubBinds = '';
+    foreach ($tabelas as $tabela) {
+
+        $replaces = [
+            'PATH_INTERFACE_REPOSITORY_CLASS' => '\\'.$app['config']['project_name'].'\Repositories\\Interfaces\\'.$tabela->getNomeCamelCaseSingular().'Interface::class',
+            'PATH_REPOSITORY_CLASS'           => '\\'.$app['config']['project_name'].'\Repositories\\Eloquent\\'.$tabela->getNomeCamelCaseSingular().'Repository::class',
+        ];
+
+        $stubBinds .= preencherStub($stub_path, '_BINDS', $replaces);
+    }
+
+    $replaces = [
+        'NAMESPACE' => 'namespace '.$app['config']['project_name'].'\Providers;',
+        'CLASS'     => $app['config']['project_name'],
+        'BINDS'     => $stubBinds
+    ];
+
+    $stub = preencherStub($stub_path, 'provider', $replaces);
+
+    $arquivo = $destination_path.$app['config']['project_name'].'RepositoryProvider.php';
+    criarArquivo($stub, $arquivo);
+    $arquivosCriados .= $arquivo.'<br>';
+
+    return new Response($arquivosCriados, 200);
+
+});
 
 $app->run();

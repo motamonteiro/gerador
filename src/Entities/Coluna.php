@@ -235,4 +235,51 @@ class Coluna
         return lcfirst($this->getCampoChaveEstrangeiraCamelCase());
     }
 
+    /**
+     * Retorna o campo informado, retirando o _id ou id_ montando assim o nome da classe
+     * Exemplo: ID_USUARIO_DECLARANTE retorna USUARIO_DECLARANTE
+     * @return string
+     */
+    public function getNomeClasse($campo) 
+    {
+        $campo = strtolower($campo);
+        
+        if(substr($campo,0,3) == "id_"){
+            $nomeClasse = substr($campo,2);
+        }elseif(substr($campo,-3) == "_id"){
+            $nomeClasse = substr($campo,0,-2);
+        } else {
+            echo 'erro ao identificar o id no campo '.$campo;
+            exit;
+        }
+        
+        return $nomeClasse;
+        
+    }
+
+    /**
+     * Retorna o campo informado, retirando o _id ou id_ montando assim o nome da classe no formato camel case
+     * Exemplo: ID_USUARIO_DECLARANTE retorna UsuarioDeclarante
+     * @return string
+     */
+    public function getNomeClasseCamelCase($campo)
+    {
+        $nome = str_replace('_', ' ', $this->getNomeClasse($campo));
+        $nome = ucwords(strtolower($nome));
+        $nome = str_replace(' ', '', $nome);
+        return $nome; 
+
+    }
+
+    /**
+     * Retorna o campo informado, retirando o _id ou id_ montando assim o nome da classe no formato camel case com a primeira letra minuscula
+     * Exemplo: ID_USUARIO_DECLARANTE retorna usuarioDeclarante
+     * @return string
+     */
+    public function getNomeClasseCamelCaseLcFirst($campo)
+    {        
+        return lcfirst($this->getNomeClasseCamelCase($campo));
+
+    }
+
 }

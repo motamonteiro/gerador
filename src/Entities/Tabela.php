@@ -166,7 +166,7 @@ class Tabela
      */
     public function getNomeCamelCaseLcFirst()
     {
-        return lcfirst($this->getNomeCamelCase());;
+        return lcfirst($this->getNomeCamelCase());
     }
 
     /**
@@ -223,6 +223,10 @@ class Tabela
             return substr($nome,0,-3).'ao';
         }
 
+        if(substr($nome, -3) == 'ais'){
+            return substr($nome,0,-3).'al';
+        }
+
         if((substr($nome, -1) == 's') && (substr($nome, -3) != 'tus')){
             return substr($nome,0,-1);
         }
@@ -238,7 +242,21 @@ class Tabela
      */
     public function getNomeCamelCaseSingular()
     {
-        $nome = $this->getSingularMinusculo($this->getNome());
+        if(!empty($this->prefixo)) {
+            $nome = str_replace($this->prefixo.'_', '', $this->nomeCompleto);
+        } else {
+            $nome = $this->nomeCompleto;
+        }
+
+        $array = explode('_', $nome);
+        $cont = 0;
+        foreach ($array as $a) {
+            $array[$cont] = $this->getSingularMinusculo($a);
+            $cont++;
+        }
+        $nome = implode('_',$array);
+        
+        $nome = $this->getSingularMinusculo($nome);
         $nome = str_replace('_', ' ', $nome);
         $nome = ucwords(strtolower($nome));
         $nome = str_replace(' ', '', $nome);
