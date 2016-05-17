@@ -1,0 +1,59 @@
+<?php
+
+$NAMESPACE$
+
+use Prettus\Repository\Criteria\RequestCriteria;
+
+
+class BaseRepository extends \Prettus\Repository\Eloquent\BaseRepository
+{
+    protected $fieldSearchable = [];
+
+    /**
+     * Specify Model class name
+     *
+     * @return string
+     */
+    public function model()
+    {
+        return '';
+    }
+
+    /**
+     * Boot up the repository, pushing criteria
+     */
+    public function boot()
+    {
+        $this->pushCriteria(app(RequestCriteria::class));
+    }
+
+    /**
+     * Delete multiple lines using the where clause
+     * @param array $where ["ID_CAMPO"=>$campo] / [["OR","ID_CAMPO",$campo], ["AND","ID_CAMPO",$campo]]
+     * @return mixed
+     */
+    public function deleteWithCondition( array $where)
+    {
+
+        $this->applyScope();
+
+        $model = $this->model;
+        foreach ($where as $field => $value){
+            if(is_array($value)){
+                list($condition, $field, $val) = $value;
+                if(strtolower($condition) == 'or'){
+                    $model = $model->orWhere($field, $val);
+                }else{
+                    $model = $model->where($field, $val);
+                }
+            }else{
+                $model = $model->where($field,$value);
+            }
+        }
+        $model = $model->delete();
+
+        $this->resetModel();
+        return $this->parserResult($model);
+    }
+
+}

@@ -9,11 +9,11 @@ $app = new Silex\Application();
 $app['config'] = [
     'db_connection' => 'oracle',
     'db_host' => '127.0.0.1',
-    'db_name' => 'german',
+    'db_name' => 'itcmd',
     'db_username' => 'root',
     'db_password' => 'root',
-    'table_prefix' => '',
-    'project_name' => 'GerMan',
+    'table_prefix' => 'itcmd',
+    'project_name' => 'Itcmd',
     'stub_path' =>  '../src/Stubs/',
     'destination_path' =>  __DIR__.'\\arquivos\\' //D:\web\www\gerador\public\arquivos
 
@@ -54,20 +54,20 @@ $app->get('/entityEloquent', function() use ($app) {
 
                 $tabelasEstrangeiras = $tabela->getTabelasEstrangeiras();
                 foreach ($tabelasEstrangeiras as $tabelaEstrangeira) {
-                    if($tabelaEstrangeira->getChavePrimariaMinusculo() == $coluna->getCampoChaveEstrangeiraMinusculo()){
+                    if (($tabelaEstrangeira->getNome() == $coluna->getCampoTabelaEstrangeira())) {
                         $nmeTabelaEstrangeira = $tabelaEstrangeira->getNomeCamelCaseSingular();
-                    }
+                        break;
+                    }                    
                 }
-                
+
                 $replaces = [
                     'NOME_CLASSE_ESTRANGEIRA_CAMEL_CASE_LC_FIRST' => $coluna->getNomeClasseCamelCaseLcFirst($coluna->getCampo()),
-                    'NOME_TABELA_FK_CAMEL_CASE'          => $nmeTabelaEstrangeira,
-                    'NOME_COLUNA_FK'                     => $coluna->getCampoChaveEstrangeiraMinusculo(),
-                    'NOME_COLUNA'                        => $coluna->getCampoMinusculo(),
+                    'NOME_TABELA_FK_CAMEL_CASE' => $nmeTabelaEstrangeira,
+                    'NOME_COLUNA_FK'            => $coluna->getCampoChaveEstrangeiraMinusculo(),
+                    'NOME_COLUNA'               => $coluna->getCampoMinusculo(),
                 ];
 
                 $stubFuncoesBelongsTo .= preencherStub($stub_path, '_FUNCOES_BELONGS_TO', $replaces);
-
             }
         }
 
@@ -188,23 +188,23 @@ $app->get('/entityOrmSefaz', function() use ($app) {
 
 $app->get('/presenter', function() use ($app) {
 
+    $stub_path = $app['config']['stub_path'].'Presenters/';
+    $destination_path = $app['config']['destination_path'].'Presenters\\';
+    $arquivosCriados = '';
+
     $tabelas = listarObjTabelas($app);
 
-    $arquivosCriados = '';
     foreach ($tabelas as $tabela) {
 
-        $stub = file_get_contents($app['config']['stub_path'].'Presenters/presenter.stub');
         $replaces = [
-            'NAMESPACE'            => 'namespace '.$app['config']['project_name'].'\Presenter;',
+            'NAMESPACE'            => 'namespace '.$app['config']['project_name'].'\Presenters;',
             'CLASS'                => $tabela->getNomeCamelCaseSingular(),
             'PROJETO'              => $app['config']['project_name'],
         ];
 
-        foreach ($replaces as $search => $replace) {
-            $stub = str_replace('$' . strtoupper($search) . '$', $replace, $stub);
-        }
+        $stub = preencherStub($stub_path, 'presenter', $replaces);
 
-        $arquivo = $app['config']['destination_path'].'Presenters\\'.$tabela->getNomeCamelCaseSingular().'Presenter.php';
+        $arquivo = $destination_path.$tabela->getNomeCamelCaseSingular().'Presenter.php';
         criarArquivo($stub, $arquivo);
         $arquivosCriados .= $arquivo.'<br>';
 
@@ -216,41 +216,37 @@ $app->get('/presenter', function() use ($app) {
 
 $app->get('/repositoryInterface', function() use ($app) {
 
+    $stub_path = $app['config']['stub_path'].'Repositories/Interfaces/';
+    $destination_path = $app['config']['destination_path'].'Repositories\\Interfaces\\';
+    $arquivosCriados = '';
+
     $tabelas = listarObjTabelas($app);
 
-    $arquivosCriados = '';
     foreach ($tabelas as $tabela) {
 
-        $stub = file_get_contents($app['config']['stub_path'].'Repositories/Interfaces/interface.stub');
         $replaces = [
-            'NAMESPACE'            => 'namespace '.$app['config']['project_name'].'\Repositories\Interfaces;',
-            'CLASS'                => $tabela->getNomeCamelCaseSingular(),
+            'NAMESPACE' => 'namespace '.$app['config']['project_name'].'\Repositories\Interfaces;',
+            'CLASS'     => $tabela->getNomeCamelCaseSingular(),
         ];
 
-        foreach ($replaces as $search => $replace) {
-            $stub = str_replace('$' . strtoupper($search) . '$', $replace, $stub);
-        }
+        $stub = preencherStub($stub_path, 'interface', $replaces);
 
-        $arquivo = $app['config']['destination_path'].'Repositories\\Interfaces\\'.$tabela->getNomeCamelCaseSingular().'Interface.php';
+        $arquivo = $destination_path.$tabela->getNomeCamelCaseSingular().'Interface.php';
         criarArquivo($stub, $arquivo);
         $arquivosCriados .= $arquivo.'<br>';
 
     }
 
     //Cria o BaseInterface.php
-    $stub = file_get_contents($app['config']['stub_path'].'Repositories/Interfaces/baseInterface.stub');
     $replaces = [
-        'NAMESPACE'            => 'namespace '.$app['config']['project_name'].'\Repositories\Interfaces;',
+        'NAMESPACE' => 'namespace '.$app['config']['project_name'].'\Repositories\Interfaces;',
     ];
 
-    foreach ($replaces as $search => $replace) {
-        $stub = str_replace('$' . strtoupper($search) . '$', $replace, $stub);
-    }
+    $stub = preencherStub($stub_path, 'baseInterfaceV1', $replaces);
 
-    $arquivo = $app['config']['destination_path'].'Repositories\\Interfaces\\BaseInterface.php';
+    $arquivo = $destination_path.'BaseInterface.php';
     criarArquivo($stub, $arquivo);
     $arquivosCriados .= $arquivo.'<br>';
-
 
     return new Response($arquivosCriados, 200);
 
@@ -285,6 +281,45 @@ $app->get('/provider', function() use ($app) {
     $stub = preencherStub($stub_path, 'provider', $replaces);
 
     $arquivo = $destination_path.$app['config']['project_name'].'RepositoryProvider.php';
+    criarArquivo($stub, $arquivo);
+    $arquivosCriados .= $arquivo.'<br>';
+
+    return new Response($arquivosCriados, 200);
+
+});
+
+$app->get('/repositoryEloquent', function() use ($app) {
+
+    $stub_path = $app['config']['stub_path'].'Repositories/Eloquent/';
+    $destination_path = $app['config']['destination_path'].'Repositories\\Eloquent\\';
+    $arquivosCriados = '';
+
+    $tabelas = listarObjTabelas($app);
+
+    foreach ($tabelas as $tabela) {
+
+        $replaces = [
+            'NAMESPACE' => 'namespace ' . $app['config']['project_name'] . '\Repositories\Eloquent;',
+            'CLASS' => $tabela->getNomeCamelCaseSingular(),
+            'PROJETO' => $app['config']['project_name'],
+            'COLUNAS' => '\''.$tabela->getChavePrimariaMinusculo().'\', '.$tabela->getColunasCamposSemPkPorVirgulaMinusculo()
+        ];
+
+        $stub = preencherStub($stub_path, 'repositoryV1', $replaces);
+
+        $arquivo = $destination_path . $tabela->getNomeCamelCaseSingular().'Repository.php';
+        criarArquivo($stub, $arquivo);
+        $arquivosCriados .= $arquivo.'<br>';
+
+    }
+
+    $replaces = [
+        'NAMESPACE' => 'namespace '.$app['config']['project_name'].'\Repositories\Eloquent;',
+    ];
+
+    $stub = preencherStub($stub_path, 'baseRepositoryV1', $replaces);
+
+    $arquivo = $destination_path.'BaseRepository.php';
     criarArquivo($stub, $arquivo);
     $arquivosCriados .= $arquivo.'<br>';
 

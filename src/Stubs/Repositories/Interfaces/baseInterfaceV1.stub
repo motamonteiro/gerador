@@ -1,0 +1,16 @@
+<?php
+
+$NAMESPACE$
+
+use Prettus\Repository\Contracts\RepositoryCriteriaInterface;
+use Prettus\Repository\Contracts\RepositoryInterface;
+
+interface BaseInterface extends RepositoryInterface, RepositoryCriteriaInterface
+{
+    /**
+     * Delete multiple lines using the where clause
+     * @param array $where ["ID_CAMPO"=>$campo] / [["OR","ID_CAMPO",$campo], ["AND","ID_CAMPO",$campo]]
+     * @return mixed
+     */
+    public function deleteWithCondition(array $where);
+}

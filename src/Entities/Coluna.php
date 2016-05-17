@@ -19,6 +19,10 @@ class Coluna
     /**
      * @var string
      */
+    private $campoTabelaEstrangeira;
+    /**
+     * @var string
+     */
     private $campoChaveEstrangeira;
     /**
      * @var string
@@ -37,9 +41,10 @@ class Coluna
      */
     private $auto_increment;
 
-    public function __construct($campo, $tipo, $nulo, $chave, $auto_increment, $campoChaveEstrangeira = '')
+    public function __construct($campo, $tipo, $nulo, $chave, $auto_increment, $campoTabelaEstrangeira = '', $campoChaveEstrangeira = '')
     {
         $this->campo = $campo;
+        $this->campoTabelaEstrangeira = $campoTabelaEstrangeira;
         $this->campoChaveEstrangeira = $campoChaveEstrangeira;
         $this->tipo = $tipo;
         $this->nulo = $nulo;
@@ -62,6 +67,24 @@ class Coluna
     public function setCampo($campo)
     {
         $this->campo = $campo;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCampoTabelaEstrangeira()
+    {
+        return $this->campoTabelaEstrangeira;
+    }
+
+    /**
+     * @param string $campo
+     * @return Coluna
+     */
+    public function setCampoTabelaEstrangeira($campoTabelaEstrangeira)
+    {
+        $this->campoTabelaEstrangeira = $campoTabelaEstrangeira;
         return $this;
     }
 

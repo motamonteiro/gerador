@@ -42,6 +42,7 @@ if (!function_exists('listarObjTabelas')) {
                             $nulo = ($nomeDaColunaEstrangeira['Null'] == 'NO') ? false : true;
                             $auto_increment = ($nomeDaColunaEstrangeira['Extra'] == 'auto_increment') ? true : false;
                             $colunaEstrangeira = new \MotaMonteiro\Gerador\Entities\Coluna($nomeDaColunaEstrangeira['Field'], $nomeDaColunaEstrangeira['Type'], $nulo, $nomeDaColunaEstrangeira['Key'], $auto_increment);
+                            $coluna->setCampoTabelaEstrangeira($tabelaEstrangeira->getNome());
                             $coluna->setCampoChaveEstrangeira($nomeDaTabelaEstrangeira['coluna']);
                             $tabelaEstrangeira->addColuna($colunaEstrangeira);
                         }

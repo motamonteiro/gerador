@@ -215,6 +215,10 @@ class Tabela
             return '';
         }
 
+        if(substr($nome, -3) == 'ens'){
+            return substr($nome,0,-3).'em';
+        }
+
         if(substr($nome, -3) == 'ies'){
             return substr($nome,0,-3).'y';
         }

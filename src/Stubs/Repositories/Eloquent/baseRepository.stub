@@ -1,0 +1,81 @@
+<?php
+
+$NAMESPACE$
+
+use Prettus\Repository\Criteria\RequestCriteria;
+
+class BaseRepository extends \Prettus\Repository\Eloquent\BaseRepository
+{
+    protected $fieldSearchable = [];
+
+    /**
+     * Specify Model class name
+     *
+     * @return string
+     */
+    public function model()
+    {
+        return '';
+    }
+
+    /**
+     * Boot up the repository, pushing criteria
+     */
+    public function boot()
+    {
+        $this->pushCriteria(app(RequestCriteria::class));
+    }
+
+
+
+
+    /**
+     * Retrieve count data of repository
+     *
+     * @return int
+     */
+    public function count()
+    {
+        $this->applyScope();
+        $model = $this->model->count();
+        $this->resetModel();
+        return $this->parserResult($model);
+    }
+
+
+    /**
+     * Find data by multiple fields
+     *
+     * @param array $where
+     * @param int $nivelDetalhamento
+     * @return mixed
+     */
+    public function findWhereWithCondition(array $where , $nivelDetalhamento = 0)
+    {
+        return $this->findWhere($where);
+    }
+
+    /**
+     * Build a filter for query
+     *
+     * @param array $where
+     * @param array $columns
+     * @return mixed
+     */
+    public function filter( array $where , $columns = array('*'))
+    {
+        return $this->findWhere($where, $columns);
+    }
+
+
+    /**
+     * Return json from model result
+     *
+     * @param $retorno
+     * @return mixed
+     */
+    public function retornarJson($retorno)
+    {
+        return $retorno;
+    }
+}
