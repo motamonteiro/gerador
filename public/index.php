@@ -15,7 +15,7 @@ $app['config'] = [
     'table_prefix' => 'itcmd',
     'project_name' => 'Itcmd',
     'stub_path' =>  '../src/Stubs/',
-    'destination_path' =>  __DIR__.'\\arquivos\\' //D:\web\www\gerador\public\arquivos
+    'destination_path' =>  __DIR__.'/arquivos/' //D:\web\www\gerador\public\arquivos
 
 ];
 
@@ -40,7 +40,7 @@ $app->get('/tabelas', function() use ($app) {
 $app->get('/entityEloquent', function() use ($app) {
 
     $stub_path = $app['config']['stub_path'].'Entities/Eloquent/';
-    $destination_path = $app['config']['destination_path'].'Entities\\Eloquent\\';
+    $destination_path = $app['config']['destination_path'].'Entities/Eloquent/';
     $arquivosCriados = '';
 
     $tabelas = listarObjTabelas($app);
@@ -48,8 +48,13 @@ $app->get('/entityEloquent', function() use ($app) {
     foreach ($tabelas as $tabela) {
 
         $stubFuncoesBelongsTo = '';
-
+        $flgTimeStamps = false;
         foreach ($tabela->getColunas() as $coluna) {
+            
+            if($coluna->getCampoMinusculo() == 'created_at'){
+                $flgTimeStamps = true;        
+            }
+            
             if($coluna->getChave() == "MUL"){
 
                 $tabelasEstrangeiras = $tabela->getTabelasEstrangeiras();
@@ -75,7 +80,9 @@ $app->get('/entityEloquent', function() use ($app) {
         $replaces = [
             'NAMESPACE'            => 'namespace '.$app['config']['project_name'].'\Entities\Eloquent;',
             'CLASS'                => $tabela->getNomeCamelCaseSingular(),
-            'DB_CONNECTION'        => $app['config']['db_connection'],
+            'PUBLIC_CONNECTION'    => ($app['config']['db_connection'] == 'oracle') ? 'protected $connection = \''.$app['config']['db_connection'].'\';' : '',
+            'PUBLIC_SEQUENCE'      => ($app['config']['db_connection'] == 'oracle') ? 'protected $sequence = \''.$tabela->getNomeCompletoMinusculo().'_seq\';' : '',
+            'PUBLIC_TIMESTAMPS'    => (!$flgTimeStamps) ? 'public $timestamps = false;' : '',
             'NOME_COMPLETO_TABELA' => $tabela->getNomeCompletoMinusculo(),
             'NOME_COLUNA_PK'       => $tabela->getChavePrimariaMinusculo(),
             'COLUNAS_SEM_PK'       => $tabela->getColunasCamposSemPkPorVirgulaMinusculo(),
@@ -99,7 +106,7 @@ $app->get('/entityEloquent', function() use ($app) {
 $app->get('/entityOrmSefaz', function() use ($app) {
 
     $stub_path = $app['config']['stub_path'].'Entities/OrmSefaz/';
-    $destination_path = $app['config']['destination_path'].'Entities\\OrmSefaz\\';
+    $destination_path = $app['config']['destination_path'].'Entities/OrmSefaz/';
     $tabelas = listarObjTabelas($app);
 
     $arquivosCriados = '';
@@ -189,7 +196,7 @@ $app->get('/entityOrmSefaz', function() use ($app) {
 $app->get('/presenter', function() use ($app) {
 
     $stub_path = $app['config']['stub_path'].'Presenters/';
-    $destination_path = $app['config']['destination_path'].'Presenters\\';
+    $destination_path = $app['config']['destination_path'].'Presenters/';
     $arquivosCriados = '';
 
     $tabelas = listarObjTabelas($app);
@@ -217,7 +224,7 @@ $app->get('/presenter', function() use ($app) {
 $app->get('/repositoryInterface', function() use ($app) {
 
     $stub_path = $app['config']['stub_path'].'Repositories/Interfaces/';
-    $destination_path = $app['config']['destination_path'].'Repositories\\Interfaces\\';
+    $destination_path = $app['config']['destination_path'].'Repositories/Interfaces/';
     $arquivosCriados = '';
 
     $tabelas = listarObjTabelas($app);
@@ -256,7 +263,7 @@ $app->get('/repositoryInterface', function() use ($app) {
 $app->get('/provider', function() use ($app) {
 
     $stub_path = $app['config']['stub_path'].'Providers/';
-    $destination_path = $app['config']['destination_path'].'Providers\\';
+    $destination_path = $app['config']['destination_path'].'Providers/';
     $arquivosCriados = '';
 
     $tabelas = listarObjTabelas($app);
@@ -291,7 +298,7 @@ $app->get('/provider', function() use ($app) {
 $app->get('/repositoryEloquent', function() use ($app) {
 
     $stub_path = $app['config']['stub_path'].'Repositories/Eloquent/';
-    $destination_path = $app['config']['destination_path'].'Repositories\\Eloquent\\';
+    $destination_path = $app['config']['destination_path'].'Repositories/Eloquent/';
     $arquivosCriados = '';
 
     $tabelas = listarObjTabelas($app);
@@ -322,6 +329,125 @@ $app->get('/repositoryEloquent', function() use ($app) {
     $arquivo = $destination_path.'BaseRepository.php';
     criarArquivo($stub, $arquivo);
     $arquivosCriados .= $arquivo.'<br>';
+
+    return new Response($arquivosCriados, 200);
+
+});
+
+$app->get('/transformer', function() use ($app) {
+
+    $stub_path = $app['config']['stub_path'].'Transformers/';
+    $destination_path = $app['config']['destination_path'].'Transformers/';
+    $arquivosCriados = '';
+
+    $tabelas = listarObjTabelas($app);
+
+    foreach ($tabelas as $tabela) {
+        
+        $stubDefaultIncludes = '';
+        $stubReturnTransformer = '';
+        $stubFunctionIncludes = '';
+
+        $replaces = [
+            'TABELA_ESTRANGEIRA_SINGULAR_CAMEL_CASE' => $app['config']['project_name'].'\Entities\Eloquent\\'.$tabela->getNomeCamelCaseSingular(),
+        ];
+        $stubUseEntities = preencherStub($stub_path, '_USE_ENTITIES', $replaces);
+
+        foreach ($tabela->getColunas() as $coluna) {
+
+            if ($coluna->getChave() == "MUL") {
+
+                $tabelasEstrangeiras = $tabela->getTabelasEstrangeiras();
+                foreach ($tabelasEstrangeiras as $tabelaEstrangeira) {
+                    if (($tabelaEstrangeira->getNome() == $coluna->getCampoTabelaEstrangeira())) {
+
+                        $replaces = [
+                            'TABELA_ESTRANGEIRA_SINGULAR_CAMEL_CASE' => $app['config']['project_name'].'\Entities\Eloquent\\'.$tabelaEstrangeira->getNomeCamelCaseSingular(),
+                        ];
+                        $stubUseEntities .= preencherStub($stub_path, '_USE_ENTITIES', $replaces);
+
+
+                        $replaces = [
+                            'TABELA_ESTRANGEIRA_SINGULAR_CAMEL_CASE_LC_FIRST' => $tabelaEstrangeira->getNomeCamelCaseLcFirstSingular(),
+                        ];
+                        $stubDefaultIncludes .= preencherStub($stub_path, '_DEFAULT_INCLUDES', $replaces);
+
+                        $replaces = [
+                            'CLASS' => $tabela->getNomeCamelCaseSingular(),
+                            'TABELA_ESTRANGEIRA_SINGULAR_CAMEL_CASE_LC_FIRST' => $tabelaEstrangeira->getNomeCamelCaseLcFirstSingular(),
+                            'TABELA_ESTRANGEIRA_SINGULAR_CAMEL_CASE' => $tabelaEstrangeira->getNomeCamelCaseSingular(),
+                        ];
+                        $stubFunctionIncludes .= preencherStub($stub_path, '_FUNCTION_INCLUDES', $replaces);
+
+                        break;
+                    }
+                }
+            }
+
+            $replaces = [
+                'NOME_COLUNA_CAMEL_CASE_LC_FIRST' => $coluna->getCampoCamelCaseLcFirst(),
+                'NOME_COLUNA_MINUSCULO' => $coluna->getCampoMinusculo(),
+            ];
+            $stubReturnTransformer .= preencherStub($stub_path, '_RETURN_TRANSFORM', $replaces);
+            
+        }
+
+
+        $replaces = [
+            'NAMESPACE'         => 'namespace '.$app['config']['project_name'].'\Transformers;',
+            'CLASS'             => $tabela->getNomeCamelCaseSingular(),
+            '_USE_ENTITIES'     => $stubUseEntities,
+            '_DEFAULT_INCLUDES' => $stubDefaultIncludes,
+            '_RETURN_TRANSFORM' => $stubReturnTransformer,
+            '_FUNCTION_INCLUDES' => $stubFunctionIncludes
+        ];
+        $stub = preencherStub($stub_path, 'transformer', $replaces);
+
+        $arquivo = $destination_path.$tabela->getNomeCamelCaseSingular().'Transformer.php';
+        criarArquivo($stub, $arquivo);
+        $arquivosCriados .= $arquivo.'<br>';
+    }
+
+    return new Response($arquivosCriados, 200);
+
+});
+
+$app->get('/validator', function() use ($app) {
+
+    $stub_path = $app['config']['stub_path'].'Validators/';
+    $destination_path = $app['config']['destination_path'].'Validators/';
+    $arquivosCriados = '';
+
+    $tabelas = listarObjTabelas($app);
+
+    foreach ($tabelas as $tabela) {
+
+        $stubRules = '';
+        
+        foreach ($tabela->getColunas() as $coluna) {
+
+            if (($coluna->getChave() != "PRI") && ($coluna->getCampoMinusculo() != 'created_at') && ($coluna->getCampoMinusculo() != 'updated_at')) {
+
+                $replaces = [
+                    'NOME_COLUNA_MINUSCULO' => $coluna->getCampoMinusculo(),
+                    'REGRA_VALIDATOR' => $coluna->getRegraValidator(),
+                ];
+
+                $stubRules .= preencherStub($stub_path, '_RULES', $replaces);
+            }
+        }
+
+        $replaces = [
+            'NAMESPACE' => 'namespace '.$app['config']['project_name'].'\Validators;',
+            'CLASS'     => $tabela->getNomeCamelCaseSingular(),
+            '_RULES'    => $stubRules,
+        ];
+        $stub = preencherStub($stub_path, 'validator', $replaces);
+
+        $arquivo = $destination_path.$tabela->getNomeCamelCaseSingular().'Validator.php';
+        criarArquivo($stub, $arquivo);
+        $arquivosCriados .= $arquivo.'<br>';
+    }
 
     return new Response($arquivosCriados, 200);
 

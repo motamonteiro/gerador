@@ -16,11 +16,11 @@ class $CLASS$ extends Model implements Transformable
 
     use TransformableTrait;
 
-    protected $connection = '$DB_CONNECTION$';
+    $PUBLIC_CONNECTION$
     protected $table = '$NOME_COMPLETO_TABELA$';
     protected $primaryKey = '$NOME_COLUNA_PK$';
-    public $sequence = '$NOME_COMPLETO_TABELA$_seq';
-    public $timestamps = false;
+    $PUBLIC_SEQUENCE$
+    $PUBLIC_TIMESTAMPS$
 
     protected $fillable = [
         $COLUNAS_SEM_PK$

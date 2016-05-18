@@ -23,10 +23,9 @@ if (!function_exists('listarObjTabelas')) {
             $nomesDasColunas = listarColunas($app, $nomeDaTabela);
 
             foreach ($nomesDasColunas as $nomeDaColuna) {
-
-                $nulo = ($nomeDaColuna['Null'] == 'NO') ? false : true;
-                $auto_increment = ($nomeDaColuna['Extra'] == 'auto_increment') ? true : false;
-                $coluna = new \MotaMonteiro\Gerador\Entities\Coluna($nomeDaColuna['Field'], $nomeDaColuna['Type'], $nulo, $nomeDaColuna['Key'], $auto_increment);
+                $nulo = ($nomeDaColuna['Null'] == 'NO') ? 0 : 1;
+                $auto_increment = ($nomeDaColuna['Extra'] == 'auto_increment') ? 1 : 0;
+                $coluna = new \MotaMonteiro\Gerador\Entities\Coluna($nomeDaColuna['Field'], $nomeDaColuna['Type'], $nulo, $nomeDaColuna['Key'], $auto_increment);                
 
                 if ($coluna->getChave() == 'MUL') {
 
@@ -39,8 +38,8 @@ if (!function_exists('listarObjTabelas')) {
                         $tabelaEstrangeira = new \MotaMonteiro\Gerador\Entities\Tabela($nomeDaTabelaEstrangeira['tabela'], $app['config']['table_prefix']);
 
                         foreach ($nomesDasColunasEstrangeiras as $nomeDaColunaEstrangeira) {
-                            $nulo = ($nomeDaColunaEstrangeira['Null'] == 'NO') ? false : true;
-                            $auto_increment = ($nomeDaColunaEstrangeira['Extra'] == 'auto_increment') ? true : false;
+                            $nulo = ($nomeDaColunaEstrangeira['Null'] == 'NO') ? 0 : 1;
+                            $auto_increment = ($nomeDaColunaEstrangeira['Extra'] == 'auto_increment') ? 1 : 0;
                             $colunaEstrangeira = new \MotaMonteiro\Gerador\Entities\Coluna($nomeDaColunaEstrangeira['Field'], $nomeDaColunaEstrangeira['Type'], $nulo, $nomeDaColunaEstrangeira['Key'], $auto_increment);
                             $coluna->setCampoTabelaEstrangeira($tabelaEstrangeira->getNome());
                             $coluna->setCampoChaveEstrangeira($nomeDaTabelaEstrangeira['coluna']);
@@ -51,7 +50,8 @@ if (!function_exists('listarObjTabelas')) {
                     }
                 }
 
-                $tabela->addColuna($coluna);
+                $tabela->addColuna($coluna);                
+                
             }
 
             array_push($tabelas, $tabela);

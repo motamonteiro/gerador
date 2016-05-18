@@ -1,0 +1,17 @@
+<?php
+
+$NAMESPACE$
+
+use Prettus\Validator\LaravelValidator;
+
+
+/**
+ * Class $CLASS$Validator
+ * @package $NAMESPACE$
+ */
+class $CLASS$Validator extends LaravelValidator
+{
+    protected $rules = [
+$_RULES$];
+
+}

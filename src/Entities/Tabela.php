@@ -285,7 +285,7 @@ class Tabela
         $camposSemPk = '';
         $colunas = $this->getColunas();
         foreach ($colunas as $coluna) {
-            if ($coluna->getChave() != 'PRI') {
+            if (($coluna->getChave() != 'PRI') && ($coluna->getCampoMinusculo() != 'created_at') && ($coluna->getCampoMinusculo() != 'updated_at')) {
                 $camposSemPk .= '\''.$coluna->getCampo().'\', ';
             }
         }

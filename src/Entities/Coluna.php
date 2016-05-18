@@ -79,6 +79,14 @@ class Coluna
     }
 
     /**
+     * @return string
+     */
+    public function getCampoTabelaEstrangeiraMinusculo()
+    {
+        return strtolower($this->getCampoTabelaEstrangeira());
+    }
+
+    /**
      * @param string $campo
      * @return Coluna
      */
@@ -303,6 +311,45 @@ class Coluna
     {        
         return lcfirst($this->getNomeClasseCamelCase($campo));
 
+    }
+
+    public function getRegraValidator()
+    {
+        $regra = '';
+        if($this->isNulo() == 0){
+            $regra .= 'required';
+        }
+
+        if(substr($this->getTipo(),0,3) == 'int'){
+            $regra .= '|integer';
+        }
+
+        if(substr($this->getTipo(),-8) == 'unsigned'){
+            $regra .= '|min:0';
+        }
+
+        if(substr($this->getTipo(),0,7) == 'varchar'){
+            preg_match('#\((.*?)\)#', $this->getTipo(), $match); //Pega o que estiver entre parentesis
+            $regra .= '|max:'.$match[1];
+        }
+
+
+
+
+
+        if(substr($this->getTipo(),0,4) == 'date'){
+            $regra .= '|date_format:d/m/Y';
+        }
+
+        if ($this->getChave() == 'MUL') {
+            $regra .= '|exists:'.$this->getCampoTabelaEstrangeiraMinusculo().','.$this->getCampoChaveEstrangeiraMinusculo();
+        }
+
+        if ($this->getCampoMinusculo() == 'estado') {
+            $regra .= '|in:AL,AM,AC,AP,BA,CE,DF,ES,GO,MA,MT,MS,MG,PA,PB,PR,PE,PI,RJ,RN,RO,RS,RR,SC,SE,SP,TO';
+        }
+
+        return $regra;
     }
 
 }
