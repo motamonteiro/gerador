@@ -333,10 +333,6 @@ class Coluna
             $regra .= '|max:'.$match[1];
         }
 
-
-
-
-
         if(substr($this->getTipo(),0,4) == 'date'){
             $regra .= '|date_format:d/m/Y';
         }
@@ -347,6 +343,10 @@ class Coluna
 
         if ($this->getCampoMinusculo() == 'estado') {
             $regra .= '|in:AL,AM,AC,AP,BA,CE,DF,ES,GO,MA,MT,MS,MG,PA,PB,PR,PE,PI,RJ,RN,RO,RS,RR,SC,SE,SP,TO';
+        }
+
+        if ($this->getCampoMinusculo() == 'password') {
+            $regra .= '|confirmed';
         }
 
         return $regra;

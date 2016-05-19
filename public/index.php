@@ -7,13 +7,13 @@ use Symfony\Component\HttpFoundation\Response;
 $app = new Silex\Application();
 
 $app['config'] = [
-    'db_connection' => 'oracle',
+    'db_connection' => 'mysql',
     'db_host' => '127.0.0.1',
-    'db_name' => 'itcmd',
+    'db_name' => 'german',
     'db_username' => 'root',
     'db_password' => 'root',
-    'table_prefix' => 'itcmd',
-    'project_name' => 'Itcmd',
+    'table_prefix' => '',
+    'project_name' => 'GerMan',
     'stub_path' =>  '../src/Stubs/',
     'destination_path' =>  __DIR__.'/arquivos/' //D:\web\www\gerador\public\arquivos
 
