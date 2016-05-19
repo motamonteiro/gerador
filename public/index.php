@@ -7,13 +7,13 @@ use Symfony\Component\HttpFoundation\Response;
 $app = new Silex\Application();
 
 $app['config'] = [
-    'db_connection' => 'mysql',
+    'db_connection' => 'oracle',
     'db_host' => '127.0.0.1',
-    'db_name' => 'german',
+    'db_name' => 'itcmd',
     'db_username' => 'root',
     'db_password' => 'root',
-    'table_prefix' => '',
-    'project_name' => 'GerMan',
+    'table_prefix' => 'itcmd',
+    'project_name' => 'Itcmd',
     'stub_path' =>  '../src/Stubs/',
     'destination_path' =>  __DIR__.'/arquivos/' //D:\web\www\gerador\public\arquivos
 
@@ -448,6 +448,107 @@ $app->get('/validator', function() use ($app) {
         criarArquivo($stub, $arquivo);
         $arquivosCriados .= $arquivo.'<br>';
     }
+
+    return new Response($arquivosCriados, 200);
+
+});
+
+$app->get('/service', function() use ($app) {
+
+    $stub_path = $app['config']['stub_path'].'Services/';
+    $destination_path = $app['config']['destination_path'].'Services/';
+    $arquivosCriados = '';
+
+    $tabelas = listarObjTabelas($app);
+
+    foreach ($tabelas as $tabela) {        
+
+        $replaces = [
+            'NAMESPACE' => 'namespace '.$app['config']['project_name'].'\Services;',
+            'PROJETO' => $app['config']['project_name'],
+            'CLASS'     => $tabela->getNomeCamelCaseSingular(),
+        ];
+        $stub = preencherStub($stub_path, 'service', $replaces);
+
+        $arquivo = $destination_path.$tabela->getNomeCamelCaseSingular().'Service.php';
+        criarArquivo($stub, $arquivo);
+        $arquivosCriados .= $arquivo.'<br>';
+    }
+
+    $replaces = [
+        'NAMESPACE' => 'namespace '.$app['config']['project_name'].'\Services;',
+    ];
+    $stub = preencherStub($stub_path, 'baseService', $replaces);
+
+    $arquivo = $destination_path.'BaseService.php';
+    criarArquivo($stub, $arquivo);
+    $arquivosCriados .= $arquivo.'<br>';
+    
+    return new Response($arquivosCriados, 200);
+
+});
+
+$app->get('/controller', function() use ($app) {
+
+    $stub_path = $app['config']['stub_path'].'Http/Controllers/';
+    $destination_path = $app['config']['destination_path'].'Http/Controllers/';
+    $arquivosCriados = '';
+
+    $tabelas = listarObjTabelas($app);
+    
+    foreach ($tabelas as $tabela) {
+
+        $replaces = [
+            'NAMESPACE' => 'namespace '.$app['config']['project_name'].'\Http\Controllers;',
+            'PROJETO' => $app['config']['project_name'],
+            'CLASS'     => $tabela->getNomeCamelCaseSingular(),
+        ];
+        $stub = preencherStub($stub_path, 'controller', $replaces);
+
+        $arquivo = $destination_path.$tabela->getNomeCamelCaseSingular().'Controller.php';
+        criarArquivo($stub, $arquivo);
+        $arquivosCriados .= $arquivo.'<br>';
+    }
+
+    $replaces = [
+        'PROJETO' => $app['config']['project_name'],
+    ];
+    $stub = preencherStub($stub_path, 'controllerPrincipal', $replaces);
+
+    $arquivo = $destination_path.'Controller.php';
+    criarArquivo($stub, $arquivo);
+    $arquivosCriados .= $arquivo.'<br>';
+    
+    return new Response($arquivosCriados, 200);
+
+});
+
+$app->get('/route', function() use ($app) {
+
+    $stub_path = $app['config']['stub_path'].'Http/';
+    $destination_path = $app['config']['destination_path'].'Http/';
+    $arquivosCriados = '';
+
+    $tabelas = listarObjTabelas($app);
+
+    $stubRotas = '';
+    foreach ($tabelas as $tabela) {
+
+        $replaces = [
+            'NOME_CAMEL_CASE_LC_FIRST' => $tabela->getNomeCamelCaseLcFirstSingular(),
+            'NOME_CAMEL_CASE' => $tabela->getNomeCamelCaseSingular(),
+        ];
+        $stubRotas .= preencherStub($stub_path, '_ROTAS_LUMEN', $replaces);
+    }
+
+    $replaces = [
+        '_ROTAS' => $stubRotas,
+    ];
+    $stub = preencherStub($stub_path, 'route', $replaces);
+
+    $arquivo = $destination_path.'routes.php';
+    criarArquivo($stub, $arquivo);
+    $arquivosCriados .= $arquivo.'<br>';
 
     return new Response($arquivosCriados, 200);
 

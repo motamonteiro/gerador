@@ -1,0 +1,6 @@
+    $app->get('$NOME_CAMEL_CASE_LC_FIRST$', '$NOME_CAMEL_CASE$Controller@index');
+    $app->post('$NOME_CAMEL_CASE_LC_FIRST$', '$NOME_CAMEL_CASE$Controller@store');
+    $app->get('$NOME_CAMEL_CASE_LC_FIRST$/{id$NOME_CAMEL_CASE$}', '$NOME_CAMEL_CASE$Controller@show');
+    $app->put('$NOME_CAMEL_CASE_LC_FIRST$/{id$NOME_CAMEL_CASE$}', '$NOME_CAMEL_CASE$Controller@update');
+    $app->delete('$NOME_CAMEL_CASE_LC_FIRST$/{id$NOME_CAMEL_CASE$}', '$NOME_CAMEL_CASE$Controller@destroy');
+

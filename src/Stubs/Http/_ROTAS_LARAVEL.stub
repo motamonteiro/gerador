@@ -1,0 +1,1 @@
+    Route::resource('$NOME_CAMEL_CASE_LC_FIRST$', '$NOME_CAMEL_CASE$Controller', ['except' => ['create', 'edit']]);

@@ -1,0 +1,143 @@
+<?php
+
+$NAMESPACE$
+
+use Prettus\Validator\Contracts\ValidatorInterface;
+use Prettus\Validator\Exceptions\ValidatorException;
+
+
+/**
+ * Class BaseService
+ * @package $NAMESPACE$
+ */
+class BaseService
+{
+    public function listar($colunaOrdenacao = 'id', $posicaoOrdenacao = 'desc', $qtdRegistros = 6)
+        {
+            try {
+
+                return $this->repository->scopeQuery(function ($query) use ($colunaOrdenacao, $posicaoOrdenacao) {
+                    return $query->orderBy($colunaOrdenacao, $posicaoOrdenacao);
+                })->paginate($qtdRegistros);
+
+            } catch (ValidatorException $e) {
+                return [
+                    'error' => true,
+                    'message' => $e->getMessageBag()
+                ];
+            }
+        }
+
+        public function detalharPorId($id)
+        {
+            try {
+                $this->validator->setRules(['id_entidade' => 'required|integer'])->with(['id_entidade' => $id])->passesOrFail();
+                $retorno = $this->repository->skipCriteria()->find($id);
+                if(!$retorno){
+                    return [
+                        'error' => true,
+                        'message' => "Id não encontrado"
+                    ];
+                }
+                return $retorno;
+
+            } catch (ValidatorException $e) {
+                return [
+                    'error' => true,
+                    'message' => $e->getMessageBag()
+                ];
+            }
+        }
+
+        public function criar(array $data, $flgRuleCreate=false)
+        {
+            try {
+                if($flgRuleCreate) {
+                    $this->validator->setRules($this->rulesPadrao)->with($data)->passesOrFail(ValidatorInterface::RULE_CREATE);
+                } else {
+                    $this->validator->setRules($this->rulesPadrao)->with($data)->passesOrFail();
+                }
+
+                $data = $this->transformaDadosParaUtilizarNoSql($data);
+
+                return $this->repository->create($data);
+
+            } catch (ValidatorException $e) {
+                return [
+                    'error' => true,
+                    'message' => $e->getMessageBag()
+                ];
+            }
+        }
+
+        public function atualizar(array $data, $id, $flgRuleUpdate=false)
+        {
+            try {
+
+                if($flgRuleUpdate) {
+                    $this->validator->setId($id)->setRules($this->rulesPadrao)->with($data)->passesOrFail(ValidatorInterface::RULE_UPDATE);
+                } else {
+                    $this->validator->setId($id)->setRules($this->rulesPadrao)->with($data)->passesOrFail();
+                }
+
+                $data = $this->transformaDadosParaUtilizarNoSql($data);
+
+                return $this->repository->update($data, $id);
+
+            } catch (ValidatorException $e) {
+                return [
+                    'error' => true,
+                    'message' => $e->getMessageBag()
+                ];
+            }
+        }
+
+        public function excluir($id)
+        {
+            try {
+                $this->validator->setRules(['id_entidade' => 'required|integer'])->with(['id_entidade' => $id])->passesOrFail();
+                return $this->repository->delete($id);
+
+            } catch (ValidatorException $e) {
+                return [
+                    'error' => true,
+                    'message' => $e->getMessageBag()
+                ];
+            }
+        }
+
+        /**
+         *
+         * @param array $where ["ID_CAMPO"=>$campo] / [["OR","ID_CAMPO",$campo], ["AND","ID_CAMPO",$campo]]
+         * @return array
+         */
+        public function excluirWhere(array $where)
+        {
+            try {
+                $this->validator->setRules(['where' => 'required|array'])->with(['where' => $where])->passesOrFail();
+                return $this->repository->deleteWithCondition($where);
+
+            } catch (ValidatorException $e) {
+                return [
+                    'error' => true,
+                    'message' => $e->getMessageBag()
+                ];
+            }
+        }
+
+        protected function transformaDadosParaUtilizarNoSql($data)
+        {
+            $colunas = array_keys($data);
+            foreach ($colunas as $coluna) {
+                //transforma campos que comecam com data_ do formato d/m/Y para Y-m-d
+                if (substr($coluna, 0, 5) == 'data_') {
+                    $data[$coluna] = dateSQL($data[$coluna]);
+                }
+                //encripta o password
+                if (substr($coluna, 0, 8) == 'password') {
+                    $data[$coluna] = bcrypt($data[$coluna]);
+                }
+            }
+            return $data;
+        }
+}

@@ -1,0 +1,64 @@
+<?php
+
+$NAMESPACE$
+
+use $PROJETO$\Http\Controllers\Controller;
+use $PROJETO$\Services\$CLASS$Service;
+use Illuminate\Http\Request;
+
+
+/**
+ * Class $CLASS$Controller
+ * @package $NAMESPACE$
+ */
+class $CLASS$Controller extends Controller
+{
+
+    /**
+     * @var $CLASS$Service
+     */
+    private $service;
+
+    public function __construct($CLASS$Service $service)
+    {
+        $this->service = $service;
+    }
+
+    public function index()
+    {
+        return $this->service->listar();
+    }
+
+    public function store(Request $request)
+    {
+        return $this->service->criar($request->all());
+    }
+
+    public function show($id)
+    {
+        return $this->service->detalharPorId($id);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $d = $this->service->detalharPorId($id);
+
+        if($d['error']) {
+            return $d;
+        }
+
+        return $this->service->atualizar($request->all(), $id);
+    }
+
+    public function destroy($id)
+    {
+        $d = $this->service->detalharPorId($id);
+
+        if($d['error']) {
+            return $d;
+        }
+
+        return $this->service->excluir($id);
+    }
+
+}

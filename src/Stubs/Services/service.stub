@@ -1,0 +1,37 @@
+<?php
+
+$NAMESPACE$
+
+use $PROJETO$\Repositories\Interfaces\$CLASS$Interface;
+use $PROJETO$\Validators\$CLASS$Validator;
+
+
+/**
+ * Class $CLASS$Service
+ * @package $NAMESPACE$
+ */
+class $CLASS$Service extends BaseService
+{
+    /**
+     * @var $CLASS$Interface
+     */
+    protected $repository;
+
+    /**
+     * @var $CLASS$Validator
+     */
+    protected $validator;
+
+    /**
+     * @var array
+     */
+    protected $rulesPadrao;
+
+    public function __construct($CLASS$Interface $repository, $CLASS$Validator $validator)
+    {
+        $this->repository = $repository;
+        $this->validator = $validator;
+        $this->rulesPadrao = $this->validator->getRules();
+
+    }
+}
