@@ -7,13 +7,14 @@ use Symfony\Component\HttpFoundation\Response;
 $app = new Silex\Application();
 
 $app['config'] = [
-    'db_connection' => 'oracle',
+    'framework' => 'lumen',
+    'db_connection' => 'mysql',
     'db_host' => '127.0.0.1',
-    'db_name' => 'itcmd',
+    'db_name' => 'german',
     'db_username' => 'root',
     'db_password' => 'root',
-    'table_prefix' => 'itcmd',
-    'project_name' => 'Itcmd',
+    'table_prefix' => '',
+    'project_name' => 'App',
     'stub_path' =>  '../src/Stubs/',
     'destination_path' =>  __DIR__.'/arquivos/' //D:\web\www\gerador\public\arquivos
 
@@ -538,7 +539,7 @@ $app->get('/route', function() use ($app) {
             'NOME_CAMEL_CASE_LC_FIRST' => $tabela->getNomeCamelCaseLcFirstSingular(),
             'NOME_CAMEL_CASE' => $tabela->getNomeCamelCaseSingular(),
         ];
-        $stubRotas .= preencherStub($stub_path, '_ROTAS_LUMEN', $replaces);
+        $stubRotas .= preencherStub($stub_path, ($app['config']['framework']=='laravel')?'_ROTAS_LARAVEL':'_ROTAS_LUMEN', $replaces);
     }
 
     $replaces = [

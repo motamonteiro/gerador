@@ -43,7 +43,7 @@ class $CLASS$Controller extends Controller
     {
         $d = $this->service->detalharPorId($id);
 
-        if($d['error']) {
+        if(isset($d['error'])) {
             return $d;
         }
 
@@ -54,7 +54,7 @@ class $CLASS$Controller extends Controller
     {
         $d = $this->service->detalharPorId($id);
 
-        if($d['error']) {
+        if(isset($d['error'])) {
             return $d;
         }
 
