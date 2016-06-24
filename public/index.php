@@ -4,17 +4,20 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Response;
 
+$dotenv = new Dotenv\Dotenv(__DIR__.'/..');
+$dotenv->load();
+
 $app = new Silex\Application();
 
 $app['config'] = [
-    'framework' => 'lumen',
-    'db_connection' => 'mysql',
-    'db_host' => '127.0.0.1',
-    'db_name' => 'german',
-    'db_username' => 'root',
-    'db_password' => 'root',
-    'table_prefix' => '',
-    'project_name' => 'App',
+    'framework' => $_ENV['PROJECT_FRAMEWORK'],
+    'db_connection' => $_ENV['mysql'],
+    'db_host' => $_ENV['DB_HOST'],
+    'db_name' => $_ENV['DB_NAME'],
+    'db_username' => $_ENV['DB_USERNAME'],
+    'db_password' => $_ENV['DB_PASSWORD'],
+    'table_prefix' => $_ENV['DB_TABLE_PREFIX'],
+    'project_name' => $_ENV['PROJECT_NAME'],
     'stub_path' =>  '../src/Stubs/',
     'destination_path' =>  __DIR__.'/arquivos/' //D:\web\www\gerador\public\arquivos
 
