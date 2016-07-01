@@ -11,7 +11,7 @@ $app = new Silex\Application();
 
 $app['config'] = [
     'framework' => $_ENV['PROJECT_FRAMEWORK'],
-    'db_connection' => $_ENV['mysql'],
+    'db_connection' => $_ENV['DB_CONNECTION'],
     'db_host' => $_ENV['DB_HOST'],
     'db_name' => $_ENV['DB_NAME'],
     'db_username' => $_ENV['DB_USERNAME'],
@@ -38,6 +38,11 @@ $app->get('/tabelas', function() use ($app) {
     print_r(listarObjTabelas($app));
     exit;
 
+});
+
+$app->get('/limparArquivos', function() use ($app) {
+
+    return new Response(limparDiretorios( $app['config']['destination_path'] ), 200);
 });
 
 

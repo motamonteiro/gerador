@@ -105,4 +105,43 @@ if (!function_exists('criarArquivo')) {
     }
 }
 
+if (!function_exists('limparDiretorios')) {
+
+    function limparDiretorios($caminhoParaDiretorio)
+    {
+        $excluidos = array();
+        // definindo um array para exibir os erros
+        $erros = array();
+        // definindo o objeto que faz a iteração do diretório
+        $diretorio = new RecursiveDirectoryIterator ($caminhoParaDiretorio);
+        // definindo o objeto que fará a iteração recursiva
+        $arquivos = new RecursiveIteratorIterator ($diretorio, RecursiveIteratorIterator::CHILD_FIRST);
+        // iterando o objeto
+        foreach ($arquivos as $arquivo) {
+            // verificando permissão, ou seja, se o arquivo pode ser modificado
+            if ($arquivo->isWritable()) {
+                // verificamos se a iteração atual é de um diretório
+                if ($arquivo->isDir()) {
+                    // se for, utilizamos rmdir para excluir
+                    //rmdir ( $arquivo->getPathname() );
+                    // senão, testamos se é um arquivo
+                } elseif ($arquivo->isFile() && $arquivo->getFileName() != '.gitignore') {
+                    // para arquivos, utilizamos o unlink
+                    unlink($arquivo->getPathname());
+                    array_push($excluidos, $arquivo->getPathname());
+                }
+                // caso o arquivo não possa ser modificado, gravamos na variável o nome do arquivo e a permissão do arquivo
+            } else {
+                $erros [] = 'O arquivo ' . $arquivo->getPathname() . ' tem permissões ' . $arquivo->getPerms() . ' e não pode ser excluído.';
+            }
+        }
+        // caso existam erros, mostramos, ou exibimos mensagem de sucesso.
+        if (count($erros)) {
+            return implode('<br />', $erros);
+        } else {
+            return 'Arquivos excluídos com sucesso.<br>'.implode('<br>', $excluidos);
+        }
+    }
+}
+
 
