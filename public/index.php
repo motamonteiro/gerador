@@ -59,11 +59,11 @@ $app->get('/entityEloquent', function() use ($app) {
         $stubFuncoesBelongsTo = '';
         $flgTimeStamps = false;
         foreach ($tabela->getColunas() as $coluna) {
-            
+
             if($coluna->getCampoMinusculo() == 'created_at'){
-                $flgTimeStamps = true;        
+                $flgTimeStamps = true;
             }
-            
+
             if($coluna->getChave() == "MUL"){
 
                 $tabelasEstrangeiras = $tabela->getTabelasEstrangeiras();
@@ -71,7 +71,7 @@ $app->get('/entityEloquent', function() use ($app) {
                     if (($tabelaEstrangeira->getNome() == $coluna->getCampoTabelaEstrangeira())) {
                         $nmeTabelaEstrangeira = $tabelaEstrangeira->getNomeCamelCaseSingular();
                         break;
-                    }                    
+                    }
                 }
 
                 $replaces = [
@@ -90,7 +90,7 @@ $app->get('/entityEloquent', function() use ($app) {
             'NAMESPACE'            => 'namespace '.$app['config']['project_name'].'\Entities\Eloquent;',
             'CLASS'                => $tabela->getNomeCamelCaseSingular(),
             'PUBLIC_CONNECTION'    => ($app['config']['db_connection'] == 'oracle') ? 'protected $connection = \''.$app['config']['db_connection'].'\';' : '',
-            'PUBLIC_SEQUENCE'      => ($app['config']['db_connection'] == 'oracle') ? 'protected $sequence = \''.$tabela->getNomeCompletoMinusculo().'_seq\';' : '',
+            'PUBLIC_SEQUENCE'      => ($app['config']['db_connection'] == 'oracle') ? 'public $sequence = \''.$tabela->getNomeCompletoMinusculo().'_seq\';' : '',
             'PUBLIC_TIMESTAMPS'    => (!$flgTimeStamps) ? 'public $timestamps = false;' : '',
             'NOME_COMPLETO_TABELA' => $tabela->getNomeCompletoMinusculo(),
             'NOME_COLUNA_PK'       => $tabela->getChavePrimariaMinusculo(),
@@ -352,7 +352,7 @@ $app->get('/transformer', function() use ($app) {
     $tabelas = listarObjTabelas($app);
 
     foreach ($tabelas as $tabela) {
-        
+
         $stubDefaultIncludes = '';
         $stubReturnTransformer = '';
         $stubFunctionIncludes = '';
@@ -398,7 +398,7 @@ $app->get('/transformer', function() use ($app) {
                 'NOME_COLUNA_MINUSCULO' => $coluna->getCampoMinusculo(),
             ];
             $stubReturnTransformer .= preencherStub($stub_path, '_RETURN_TRANSFORM', $replaces);
-            
+
         }
 
 
@@ -432,7 +432,7 @@ $app->get('/validator', function() use ($app) {
     foreach ($tabelas as $tabela) {
 
         $stubRules = '';
-        
+
         foreach ($tabela->getColunas() as $coluna) {
 
             if (($coluna->getChave() != "PRI") && ($coluna->getCampoMinusculo() != 'created_at') && ($coluna->getCampoMinusculo() != 'updated_at')) {
@@ -470,7 +470,7 @@ $app->get('/service', function() use ($app) {
 
     $tabelas = listarObjTabelas($app);
 
-    foreach ($tabelas as $tabela) {        
+    foreach ($tabelas as $tabela) {
 
         $replaces = [
             'NAMESPACE' => 'namespace '.$app['config']['project_name'].'\Services;',
@@ -492,7 +492,7 @@ $app->get('/service', function() use ($app) {
     $arquivo = $destination_path.'BaseService.php';
     criarArquivo($stub, $arquivo);
     $arquivosCriados .= $arquivo.'<br>';
-    
+
     return new Response($arquivosCriados, 200);
 
 });
@@ -504,7 +504,7 @@ $app->get('/controller', function() use ($app) {
     $arquivosCriados = '';
 
     $tabelas = listarObjTabelas($app);
-    
+
     foreach ($tabelas as $tabela) {
 
         $replaces = [
@@ -527,7 +527,7 @@ $app->get('/controller', function() use ($app) {
     $arquivo = $destination_path.'Controller.php';
     criarArquivo($stub, $arquivo);
     $arquivosCriados .= $arquivo.'<br>';
-    
+
     return new Response($arquivosCriados, 200);
 
 });
