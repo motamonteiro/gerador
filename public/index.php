@@ -563,4 +563,59 @@ $app->get('/route', function() use ($app) {
 
 });
 
+$app->get('/langPt-brValidation', function() use ($app) {
+    $stub_path = $app['config']['stub_path'].'resources/lang/pt-br/';
+    $destination_path = $app['config']['destination_path'].'resources/lang/pt-br/';
+    $arquivosCriados = '';
+    
+    $tabelas = listarObjTabelas($app);
+    $arrayNmeColunas = array();
+    $stubAttributes = '';
+    foreach ($tabelas as $tabela) {
+
+        foreach ($tabela->getColunas() as $coluna) {
+
+            $campoCamelCaseLcFirstSingular = $coluna->getCampoCamelCaseLcFirst();
+            if(!in_array($campoCamelCaseLcFirstSingular,$arrayNmeColunas)){
+                array_push($arrayNmeColunas, $campoCamelCaseLcFirstSingular);
+
+                $nmeColuna = $coluna->getCampo();
+                $nmeColuna = str_replace('_', ' ', $nmeColuna);
+                $nmeColuna = ucwords(strtolower($nmeColuna));
+                $arrayNmeColuna = explode(" ",$nmeColuna);
+                switch ($arrayNmeColuna[0]){
+                    case "Vlr":
+                        $arrayNmeColuna[0] = "Valor";
+                        break;
+                    case "Dat":
+                        $arrayNmeColuna[0] = "Data de";
+                        break;
+                    default:
+                        array_shift($arrayNmeColuna);
+                }
+                
+                $nmeColuna = implode(" ",$arrayNmeColuna);
+
+                $replaces = [
+                    'NOME_COLUNA_CAMEL_CASE_LC_FIRST' => $coluna->getCampoCamelCaseLcFirst(),
+                    'NOME_COLUNA_CAMEL_CASE_WITH_SPACES' => $nmeColuna,
+                ];
+
+                $stubAttributes .= preencherStub($stub_path, "ATTRIBUTES", $replaces);
+            }
+        }
+    }
+    
+    $replaces = [
+        'ATTRIBUTES' => $stubAttributes,
+    ];
+    $stub = preencherStub($stub_path, 'validation', $replaces);
+    
+    $arquivo = $destination_path.'validation.php';
+    criarArquivo($stub, $arquivo);
+    $arquivosCriados .= $arquivo.'<br>';
+    
+    return new Response($arquivosCriados, 200);
+});
+
 $app->run();
