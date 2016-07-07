@@ -46,6 +46,11 @@ class BaseService
                     'error' => true,
                     'message' => $e->getMessageBag()
                 ];
+            } catch (ModelNotFoundException $e) {
+                return [
+                    'error' => true,
+                    'message' => "Id não encontrado."
+                ];
             }
         }
 
