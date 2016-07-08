@@ -16,9 +16,7 @@ class BaseService
         {
             try {
 
-                return $this->repository->scopeQuery(function ($query) use ($colunaOrdenacao, $posicaoOrdenacao) {
-                    return $query->orderBy($colunaOrdenacao, $posicaoOrdenacao);
-                })->paginate($qtdRegistros);
+                return $this->repository->orderBy($colunaOrdenacao, $posicaoOrdenacao)->paginate($qtdRegistros);
 
             } catch (ValidatorException $e) {
                 return [
