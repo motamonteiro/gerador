@@ -618,4 +618,120 @@ $app->get('/langPt-brValidation', function() use ($app) {
     return new Response($arquivosCriados, 200);
 });
 
+$app->get('/database/migrations', function() use ($app) {
+
+    $stub_path = $app['config']['stub_path'].'database/migrations/';
+    $destination_path = $app['config']['destination_path'].'database/migrations/';
+    $arquivosCriados = '';
+
+    $tabelas = listarObjTabelas($app);
+    $migrationFkStub = '';
+
+    foreach ($tabelas as $tabela) {
+
+        $stubColunas = '';
+        $migrationFK = '';
+        $flgTimeStamps = false;
+
+
+        foreach ($tabela->getColunas() as $coluna) {
+            
+            $migrationColuna = '        $table';
+
+            if(($coluna->getCampoMinusculo() == 'created_at') || ($coluna->getCampoMinusculo() == 'updated_at')) {
+                $flgTimeStamps = true;
+            } else {
+
+
+                if($coluna->getChave() == 'PRI') {
+                    $migrationColuna .= "->increments('".$coluna->getCampoMinusculo()."')";
+                } else {
+
+                    if(substr($coluna->getTipo(),0,3) == 'int') {
+                        $migrationColuna .= "->integer('".$coluna->getCampoMinusculo()."')";
+                    } elseif (substr($coluna->getTipo(),0,4) == 'text'){
+                        $migrationColuna .= "->text('".$coluna->getCampoMinusculo()."')";
+                    } else {
+
+                        if(substr($coluna->getTipo(),0,7) == 'varchar'){
+                            $tipoMigration = 'string';
+                            preg_match('#\((.*?)\)#', $coluna->getTipo(), $match); //Pega o que estiver entre parentesis
+                            $tamanho = (isset($match[1])) ?  $match[1] : '';
+                        } else {
+
+                            $tipoMigration = explode('(',$coluna->getTipo())[0];
+                            preg_match('#\((.*?)\)#', $coluna->getTipo(), $match); //Pega o que estiver entre parentesis
+                            $tamanho = (isset($match[1])) ?  $match[1] : '';
+                            
+                        }
+
+                        if(isset($tamanho) && $tamanho !='') {
+                            $migrationColuna .= "->".$tipoMigration."('".$coluna->getCampoMinusculo()."', ".$tamanho.")";
+                            $tamanho = '';
+                        } else {
+                            $migrationColuna .= "->".$tipoMigration."('".$coluna->getCampoMinusculo()."')";
+                        }
+
+                    }
+
+                    if((substr($coluna->getTipo(),-8) == 'unsigned') || ($coluna->getChave() == 'MUL')){
+                        $migrationColuna .= "->unsigned()";
+                    }
+
+                    if($coluna->isNulo() == 1) {
+                        $migrationColuna .= "->nullable()";
+                    }
+
+                    if($coluna->getChave() == 'MUL') {
+                        $migrationFK .= "\$table->foreign('".$coluna->getCampoMinusculo()."')->references('".$coluna->getCampoChaveEstrangeiraMinusculo()."')->on('".$coluna->getCampoTabelaEstrangeiraMinusculo()."');
+                        ";
+                        //$migrationColuna .= "\$table->foreign('".$coluna->getCampoMinusculo()."')->references('".$coluna->getCampoChaveEstrangeiraMinusculo()."')->on('".$coluna->getCampoTabelaEstrangeiraMinusculo()."');";
+                    }
+                }
+
+                
+                $migrationColuna .= ";";
+
+                $replaces = [
+                    'MIGRATION_COLUNA' => $migrationColuna,
+                ];
+
+                $stubColunas .= preencherStub($stub_path, '_COLUNAS', $replaces);
+
+            }
+
+        }
+
+        $replaces = [
+            'CLASS'                => $tabela->getNomeCamelCaseSingular(),
+            'NOME_COMPLETO_TABELA' => $tabela->getNomeCompletoMinusculo(),
+            '_COLUNAS'   => $stubColunas,
+            'TIMESTAMPS' => ($flgTimeStamps) ? '$table->timestamps();' : '',
+//            'MIGRATION_FK' => ($migrationFK!='') ? 'Schema::table(\''.$tabela->getNomeCompletoMinusculo().'\', function (Blueprint $table) {'.$migrationFK.'});' : '',
+        ];
+        $stub = preencherStub($stub_path, 'migration', $replaces);
+
+        $arquivo = $destination_path.date('Y_i_d_hms').'_create_'.$tabela->getNomeCompletoMinusculo().'_table.php';
+        criarArquivo($stub, $arquivo);
+        $arquivosCriados .= $arquivo.'<br>';
+
+        //Criar stub somente com as chaves estrangeiras
+        $migrationFkStub .= ($migrationFK!='') ? 'Schema::table(\''.$tabela->getNomeCompletoMinusculo().'\', function (Blueprint $table) {'.$migrationFK.'});
+        ' : '';
+
+    }
+
+    $replaces = [
+        'MIGRATION_FK' => $migrationFkStub,
+    ];
+    $stub = preencherStub($stub_path, 'migration_fk', $replaces);
+
+    $arquivo = $destination_path.date('Y_i_d_hms').'_z_create_fk_all_table.php';
+    criarArquivo($stub, $arquivo);
+    $arquivosCriados .= $arquivo.'<br>';
+
+    return new Response($arquivosCriados, 200);
+
+});
+
 $app->run();
