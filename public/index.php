@@ -683,8 +683,8 @@ $app->get('/database/migrations', function() use ($app) {
                     }
 
                     if($coluna->getChave() == 'MUL') {
-                        $migrationFK .= "\$table->foreign('".$coluna->getCampoMinusculo()."')->references('".$coluna->getCampoChaveEstrangeiraMinusculo()."')->on('".$coluna->getCampoTabelaEstrangeiraMinusculo()."');
-                        ";
+                        $migrationFK .= "
+            \$table->foreign('".$coluna->getCampoMinusculo()."')->references('".$coluna->getCampoChaveEstrangeiraMinusculo()."')->on('".$coluna->getCampoTabelaEstrangeiraMinusculo()."');";
                         //$migrationColuna .= "\$table->foreign('".$coluna->getCampoMinusculo()."')->references('".$coluna->getCampoChaveEstrangeiraMinusculo()."')->on('".$coluna->getCampoTabelaEstrangeiraMinusculo()."');";
                     }
                 }
@@ -716,7 +716,9 @@ $app->get('/database/migrations', function() use ($app) {
         $arquivosCriados .= $arquivo.'<br>';
 
         //Criar stub somente com as chaves estrangeiras
-        $migrationFkStub .= ($migrationFK!='') ? 'Schema::table(\''.$tabela->getNomeCompletoMinusculo().'\', function (Blueprint $table) {'.$migrationFK.'});
+        $migrationFkStub .= ($migrationFK!='') ? 'Schema::table(\''.$tabela->getNomeCompletoMinusculo().'\', function (Blueprint $table) {'.$migrationFK.'
+        });
+        
         ' : '';
 
     }
@@ -725,8 +727,8 @@ $app->get('/database/migrations', function() use ($app) {
         'MIGRATION_FK' => $migrationFkStub,
     ];
     $stub = preencherStub($stub_path, 'migration_fk', $replaces);
-
-    $arquivo = $destination_path.date('Y_i_d_hms').'_z_create_fk_all_table.php';
+    $anoMais1 = date("Y") + 1;
+    $arquivo = $destination_path.$anoMais1.'_'.date('i_d_hms').'0_create_fk_all_table.php';
     criarArquivo($stub, $arquivo);
     $arquivosCriados .= $arquivo.'<br>';
 

@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class ZCreateFkAllTable extends Migration
+class CreateFkAllTable extends Migration
 {
     /**
      * Run the migrations.
