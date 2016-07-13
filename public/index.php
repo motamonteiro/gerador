@@ -19,7 +19,7 @@ $app['config'] = [
     'table_prefix' => $_ENV['DB_TABLE_PREFIX'],
     'project_name' => $_ENV['PROJECT_NAME'],
     'stub_path' =>  '../src/Stubs/',
-    'destination_path' =>  (isset($_GET['destination_path'])) ? $_GET['destination_path'] : __DIR__.'/arquivos/' //D:\web\www\gerador\public\arquivos
+    'destination_path' =>  ($_ENV['PROJECT_DIR'] != '') ? $_ENV['PROJECT_DIR'] : __DIR__.'/arquivos/'
 
 ];
 
