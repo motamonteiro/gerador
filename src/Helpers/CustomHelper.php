@@ -105,6 +105,19 @@ if (!function_exists('criarArquivo')) {
     }
 }
 
+if (!function_exists('criarDiretorios')) {
+    function criarDiretorios($app) {
+        $diretorio = '';
+        foreach ($app['config']['array_destination_folder'] as $gerador => $item) {
+            if(!is_dir($app['config']['destination_path'].$item)){
+                $diretorio .= $app['config']['destination_path'].$item."<br>";
+                mkdir($app['config']['destination_path'].$item, 0777, true);
+            }
+        }
+        return $diretorio;
+    }
+}
+
 if (!function_exists('limparDiretorios')) {
 
     function limparDiretorios($caminhoParaDiretorio)

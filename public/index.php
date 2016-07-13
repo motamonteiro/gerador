@@ -60,6 +60,10 @@ $app->get('/limparArquivos', function() use ($app) {
 
     return new Response(limparDiretorios( $app['config']['destination_path'] ), 200);
 });
+$app->get('/criarDiretorios', function() use ($app) {
+
+    return new Response(criarDiretorios($app), 200);
+});
 
 $app->get('/entityEloquent', function() use ($app) {    
     
