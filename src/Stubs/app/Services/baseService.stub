@@ -13,9 +13,13 @@ use Prettus\Validator\Exceptions\ValidatorException;
  */
 class BaseService
 {
-    public function listar($colunaOrdenacao = 'id', $posicaoOrdenacao = 'desc', $qtdRegistros = 6)
+    public function listar($colunaOrdenacao = '', $posicaoOrdenacao = 'desc', $qtdRegistros = 6)
         {
             try {
+
+                if($colunaOrdenacao == '') {
+                    return $this->repository->paginate($qtdRegistros);
+                }
 
                 return $this->repository->orderBy($colunaOrdenacao, $posicaoOrdenacao)->paginate($qtdRegistros);
 
