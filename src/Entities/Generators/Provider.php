@@ -21,13 +21,16 @@ class Provider
 
     private $stub_path;
 
+    private $destination_path;
+
     function __construct(Application $app)
     {
         $this->app = $app;
-        $this->stub_path = $this->app['config']['stub_path'].'app/Providers/';
+        $this->stub_path = $this->app['config']['stub_path'].$this->app['config']['array_destination_folder']['Provider'];
+        $this->destination_path = $this->app['config']['destination_path'].$this->app['config']['array_destination_folder']['Provider'];
     }
 
-    public function gerarArquivo($destination_path)
+    public function gerarArquivo()
     {
         $arquivosCriados = '';
 
@@ -52,7 +55,7 @@ class Provider
 
         $stub = preencherStub($this->stub_path, 'provider', $replaces);
 
-        $arquivo = $destination_path.$this->app['config']['project_name'].'RepositoryProvider.php';
+        $arquivo = $this->destination_path.$this->app['config']['project_name'].'RepositoryProvider.php';
         criarArquivo($stub, $arquivo);
         $arquivosCriados .= $arquivo.'<br>';
 

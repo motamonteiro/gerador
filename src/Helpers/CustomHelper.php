@@ -62,9 +62,9 @@ if (!function_exists('listarObjTabelas')) {
 }
 
 if (!function_exists('listarTabelas')) {
-    function listarTabelas($app) {
-
-        $stmt = $app['db']->query("SHOW TABLES FROM ".$app['config']['db_name']."");
+    function listarTabelas($app) {        
+        //$stmt = $app['db']->query("SHOW TABLES FROM ".$app['config']['db_name']."");        
+        $stmt = $app['db']->query("SHOW TABLES FROM ".$app['config']['db_name']." where Tables_in_".$app['config']['db_name']." <> 'migrations' and Tables_in_".$app['config']['db_name']." not like 'oauth_%'");
         $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
         return $result;
     }

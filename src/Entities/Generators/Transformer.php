@@ -21,13 +21,16 @@ class Transformer
 
     private $stub_path;
 
+    private $destination_path;
+
     function __construct(Application $app)
     {
         $this->app = $app;
-        $this->stub_path = $this->app['config']['stub_path'].'app/Transformers/';
+        $this->stub_path = $this->app['config']['stub_path'].$this->app['config']['array_destination_folder']['Transformer'];
+        $this->destination_path = $this->app['config']['destination_path'].$this->app['config']['array_destination_folder']['Transformer'];
     }
 
-    public function gerarArquivo($destination_path)
+    public function gerarArquivo()
     {
         $arquivosCriados = '';
 
@@ -94,7 +97,7 @@ class Transformer
             ];
             $stub = preencherStub($this->stub_path, 'transformer', $replaces);
 
-            $arquivo = $destination_path.$tabela->getNomeCamelCaseSingular().'Transformer.php';
+            $arquivo = $this->destination_path.$tabela->getNomeCamelCaseSingular().'Transformer.php';
             criarArquivo($stub, $arquivo);
             $arquivosCriados .= $arquivo.'<br>';
         }

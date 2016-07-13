@@ -21,13 +21,16 @@ class Migration
 
     private $stub_path;
 
+    private $destination_path;
+
     function __construct(Application $app)
     {
         $this->app = $app;
-        $this->stub_path = $this->app['config']['stub_path'].'database/migrations/';
+        $this->stub_path = $this->app['config']['stub_path'].$this->app['config']['array_destination_folder']['Migration'];
+        $this->destination_path = $this->app['config']['destination_path'].$this->app['config']['array_destination_folder']['Migration'];
     }
 
-    public function gerarArquivo($destination_path)
+    public function gerarArquivo()
     {
         $arquivosCriados = '';
 
@@ -118,7 +121,7 @@ class Migration
             ];
             $stub = preencherStub($this->stub_path, 'migration', $replaces);
 
-            $arquivo = $destination_path.date('Y_i_d_hms').'_create_'.$tabela->getNomeCompletoMinusculo().'_table.php';
+            $arquivo = $this->destination_path.date('Y_i_d_hms').'_create_'.$tabela->getNomeCompletoMinusculo().'_table.php';
             criarArquivo($stub, $arquivo);
             $arquivosCriados .= $arquivo.'<br>';
 
@@ -135,7 +138,7 @@ class Migration
         ];
         $stub = preencherStub($this->stub_path, 'migration_fk', $replaces);
         $anoMais1 = date("Y") + 1;
-        $arquivo = $destination_path.$anoMais1.'_'.date('i_d_hms').'_create_fk_all_table.php';
+        $arquivo = $this->destination_path.$anoMais1.'_'.date('i_d_hms').'_create_fk_all_table.php';
         criarArquivo($stub, $arquivo);
         $arquivosCriados .= $arquivo.'<br>';
 

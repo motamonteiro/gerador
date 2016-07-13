@@ -21,13 +21,16 @@ class EntityOrmSefaz
 
     private $stub_path;
 
+    private $destination_path;
+
     function __construct(Application $app)
     {
         $this->app = $app;
-        $this->stub_path = $this->app['config']['stub_path'].'app/Entities/OrmSefaz/';
+        $this->stub_path = $this->app['config']['stub_path'].$this->app['config']['array_destination_folder']['EntityOrmSefaz'];
+        $this->destination_path = $this->app['config']['destination_path'].$this->app['config']['array_destination_folder']['EntityOrmSefaz'];
     }
 
-    public function gerarArquivo($destination_path)
+    public function gerarArquivo()
     {
         $tabelas = listarObjTabelas($this->app);
 
@@ -105,7 +108,7 @@ class EntityOrmSefaz
 
             $stub = preencherStub($this->stub_path, 'entity', $replaces);
 
-            $arquivo = $destination_path.$tabela->getNomeCamelCaseSingular().'.php';
+            $arquivo = $this->destination_path.$tabela->getNomeCamelCaseSingular().'.php';
             criarArquivo($stub, $arquivo);
             $arquivosCriados .= $arquivo.'<br>';
 

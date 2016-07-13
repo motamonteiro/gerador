@@ -21,13 +21,16 @@ class LangPtBrValidation
 
     private $stub_path;
 
+    private $destination_path;
+
     function __construct(Application $app)
     {
         $this->app = $app;
-        $this->stub_path = $this->app['config']['stub_path'].'resources/lang/pt-br/';
+        $this->stub_path = $this->app['config']['stub_path'].$this->app['config']['array_destination_folder']['LangPtBrValidation'];
+        $this->destination_path = $this->app['config']['destination_path'].$this->app['config']['array_destination_folder']['LangPtBrValidation'];
     }
 
-    public function gerarArquivo($destination_path)
+    public function gerarArquivo()
     {
         $arquivosCriados = '';
 
@@ -74,7 +77,7 @@ class LangPtBrValidation
         ];
         $stub = preencherStub($this->stub_path, 'validation', $replaces);
 
-        $arquivo = $destination_path.'validation.php';
+        $arquivo = $this->destination_path.'validation.php';
         criarArquivo($stub, $arquivo);
         $arquivosCriados .= $arquivo.'<br>';
 

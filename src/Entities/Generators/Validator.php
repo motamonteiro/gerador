@@ -21,13 +21,16 @@ class Validator
 
     private $stub_path;
 
+    private $destination_path;
+
     function __construct(Application $app)
     {
         $this->app = $app;
-        $this->stub_path = $this->app['config']['stub_path'].'app/Validators/';
+        $this->stub_path = $this->app['config']['stub_path'].$this->app['config']['array_destination_folder']['Validator'];
+        $this->destination_path = $this->app['config']['destination_path'].$this->app['config']['array_destination_folder']['Validator'];
     }
 
-    public function gerarArquivo($destination_path)
+    public function gerarArquivo()
     {
         $arquivosCriados = '';
 
@@ -57,7 +60,7 @@ class Validator
             ];
             $stub = preencherStub($this->stub_path, 'validator', $replaces);
 
-            $arquivo = $destination_path.$tabela->getNomeCamelCaseSingular().'Validator.php';
+            $arquivo = $this->destination_path.$tabela->getNomeCamelCaseSingular().'Validator.php';
             criarArquivo($stub, $arquivo);
             $arquivosCriados .= $arquivo.'<br>';
         }

@@ -21,13 +21,16 @@ class RepositoryEloquent
 
     private $stub_path;
 
+    private $destination_path;
+
     function __construct(Application $app)
     {
         $this->app = $app;
-        $this->stub_path = $this->app['config']['stub_path'].'app/Repositories/Eloquent/';
+        $this->stub_path = $this->app['config']['stub_path'].$this->app['config']['array_destination_folder']['RepositoryEloquent'];
+        $this->destination_path = $this->app['config']['destination_path'].$this->app['config']['array_destination_folder']['RepositoryEloquent'];
     }
 
-    public function gerarArquivo($destination_path)
+    public function gerarArquivo()
     {
         $arquivosCriados = '';
 
@@ -44,7 +47,7 @@ class RepositoryEloquent
 
             $stub = preencherStub($this->stub_path, 'repositoryV1', $replaces);
 
-            $arquivo = $destination_path . $tabela->getNomeCamelCaseSingular().'Repository.php';
+            $arquivo = $this->destination_path . $tabela->getNomeCamelCaseSingular().'Repository.php';
             criarArquivo($stub, $arquivo);
             $arquivosCriados .= $arquivo.'<br>';
 
@@ -56,7 +59,7 @@ class RepositoryEloquent
 
         $stub = preencherStub($this->stub_path, 'baseRepositoryV1', $replaces);
 
-        $arquivo = $destination_path.'BaseRepository.php';
+        $arquivo = $this->destination_path.'BaseRepository.php';
         criarArquivo($stub, $arquivo);
         $arquivosCriados .= $arquivo.'<br>';
 

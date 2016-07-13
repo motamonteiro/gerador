@@ -21,13 +21,16 @@ class Presenter
 
     private $stub_path;
 
+    private $destination_path;
+
     function __construct(Application $app)
     {
         $this->app = $app;
-        $this->stub_path = $this->app['config']['stub_path'].'app/Presenters/';
+        $this->stub_path = $this->app['config']['stub_path'].$this->app['config']['array_destination_folder']['Presenter'];
+        $this->destination_path = $this->app['config']['destination_path'].$this->app['config']['array_destination_folder']['Presenter'];
     }
 
-    public function gerarArquivo($destination_path)
+    public function gerarArquivo()
     {
         $arquivosCriados = '';
 
@@ -43,7 +46,7 @@ class Presenter
 
             $stub = preencherStub($this->stub_path, 'presenter', $replaces);
 
-            $arquivo = $destination_path.$tabela->getNomeCamelCaseSingular().'Presenter.php';
+            $arquivo = $this->destination_path.$tabela->getNomeCamelCaseSingular().'Presenter.php';
             criarArquivo($stub, $arquivo);
             $arquivosCriados .= $arquivo.'<br>';
 

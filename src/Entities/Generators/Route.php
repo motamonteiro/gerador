@@ -21,13 +21,16 @@ class Route
 
     private $stub_path;
 
+    private $destination_path;
+
     function __construct(Application $app)
     {
         $this->app = $app;
-        $this->stub_path = $this->app['config']['stub_path'].'app/Http/';
+        $this->stub_path = $this->app['config']['stub_path'].$this->app['config']['array_destination_folder']['Route'];
+        $this->destination_path = $this->app['config']['destination_path'].$this->app['config']['array_destination_folder']['Route'];
     }
 
-    public function gerarArquivo($destination_path)
+    public function gerarArquivo()
     {
         $arquivosCriados = '';
 
@@ -48,7 +51,7 @@ class Route
         ];
         $stub = preencherStub($this->stub_path, 'route', $replaces);
 
-        $arquivo = $destination_path.'routes.php';
+        $arquivo = $this->destination_path.'routes.php';
         criarArquivo($stub, $arquivo);
         $arquivosCriados .= $arquivo.'<br>';
 

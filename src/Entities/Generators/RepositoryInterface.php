@@ -21,13 +21,16 @@ class RepositoryInterface
 
     private $stub_path;
 
+    private $destination_path;
+
     function __construct(Application $app)
     {
         $this->app = $app;
-        $this->stub_path = $this->app['config']['stub_path'].'app/Repositories/Interfaces/';
+        $this->stub_path = $this->app['config']['stub_path'].$this->app['config']['array_destination_folder']['RepositoryInterface'];
+        $this->destination_path = $this->app['config']['destination_path'].$this->app['config']['array_destination_folder']['RepositoryInterface'];
     }
 
-    public function gerarArquivo($destination_path)
+    public function gerarArquivo()
     {
         $arquivosCriados = '';
 
@@ -42,7 +45,7 @@ class RepositoryInterface
 
             $stub = preencherStub($this->stub_path, 'interface', $replaces);
 
-            $arquivo = $destination_path.$tabela->getNomeCamelCaseSingular().'Interface.php';
+            $arquivo = $this->destination_path.$tabela->getNomeCamelCaseSingular().'Interface.php';
             criarArquivo($stub, $arquivo);
             $arquivosCriados .= $arquivo.'<br>';
 
@@ -55,7 +58,7 @@ class RepositoryInterface
 
         $stub = preencherStub($this->stub_path, 'baseInterfaceV1', $replaces);
 
-        $arquivo = $destination_path.'BaseInterface.php';
+        $arquivo = $this->destination_path.'BaseInterface.php';
         criarArquivo($stub, $arquivo);
         $arquivosCriados .= $arquivo.'<br>';
 

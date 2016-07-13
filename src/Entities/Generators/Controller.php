@@ -21,13 +21,16 @@ class Controller
 
     private $stub_path;
 
+    private $destination_path;
+
     function __construct(Application $app)
     {
         $this->app = $app;
-        $this->stub_path = $this->app['config']['stub_path'].'app/Http/Controllers/';
+        $this->stub_path = $this->app['config']['stub_path'].$this->app['config']['array_destination_folder']['Controller'];
+        $this->destination_path = $this->app['config']['destination_path'].$this->app['config']['array_destination_folder']['Controller'];
     }
 
-    public function gerarArquivo($destination_path)
+    public function gerarArquivo()
     {
         $arquivosCriados = '';
 
@@ -42,7 +45,7 @@ class Controller
             ];
             $stub = preencherStub($this->stub_path, 'controller', $replaces);
 
-            $arquivo = $destination_path.$tabela->getNomeCamelCaseSingular().'Controller.php';
+            $arquivo = $this->destination_path.$tabela->getNomeCamelCaseSingular().'Controller.php';
             criarArquivo($stub, $arquivo);
             $arquivosCriados .= $arquivo.'<br>';
         }
@@ -52,7 +55,7 @@ class Controller
 //        ];
 //        $stub = preencherStub($this->stub_path, 'controllerPrincipal', $replaces);
 //
-//        $arquivo = $destination_path.'Controller.php';
+//        $arquivo = $this->destination_path.'Controller.php';
 //        criarArquivo($stub, $arquivo);
 //        $arquivosCriados .= $arquivo.'<br>';
 

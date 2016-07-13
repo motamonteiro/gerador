@@ -21,13 +21,16 @@ class Service
 
     private $stub_path;
 
+    private $destination_path;
+
     function __construct(Application $app)
     {
         $this->app = $app;
-        $this->stub_path = $this->app['config']['stub_path'].'app/Services/';
+        $this->stub_path = $this->app['config']['stub_path'].$this->app['config']['array_destination_folder']['Service'];
+        $this->destination_path = $this->app['config']['destination_path'].$this->app['config']['array_destination_folder']['Service'];
     }
 
-    public function gerarArquivo($destination_path)
+    public function gerarArquivo()
     {
         $arquivosCriados = '';
 
@@ -42,7 +45,7 @@ class Service
             ];
             $stub = preencherStub($this->stub_path, 'service', $replaces);
 
-            $arquivo = $destination_path.$tabela->getNomeCamelCaseSingular().'Service.php';
+            $arquivo = $this->destination_path.$tabela->getNomeCamelCaseSingular().'Service.php';
             criarArquivo($stub, $arquivo);
             $arquivosCriados .= $arquivo.'<br>';
         }
@@ -52,7 +55,7 @@ class Service
         ];
         $stub = preencherStub($this->stub_path, 'baseService', $replaces);
 
-        $arquivo = $destination_path.'BaseService.php';
+        $arquivo = $this->destination_path.'BaseService.php';
         criarArquivo($stub, $arquivo);
         $arquivosCriados .= $arquivo.'<br>';
 
