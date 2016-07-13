@@ -47,14 +47,14 @@ class Controller
             $arquivosCriados .= $arquivo.'<br>';
         }
 
-        $replaces = [
-            'PROJETO' => $this->app['config']['project_name'],
-        ];
-        $stub = preencherStub($this->stub_path, 'controllerPrincipal', $replaces);
-
-        $arquivo = $destination_path.'Controller.php';
-        criarArquivo($stub, $arquivo);
-        $arquivosCriados .= $arquivo.'<br>';
+//        $replaces = [
+//            'PROJETO' => $this->app['config']['project_name'],
+//        ];
+//        $stub = preencherStub($this->stub_path, 'controllerPrincipal', $replaces);
+//
+//        $arquivo = $destination_path.'Controller.php';
+//        criarArquivo($stub, $arquivo);
+//        $arquivosCriados .= $arquivo.'<br>';
 
         return $arquivosCriados;
     }
