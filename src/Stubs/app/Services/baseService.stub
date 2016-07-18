@@ -104,7 +104,12 @@ class BaseService
         {
             try {
                 $this->validator->setRules(['id_entidade' => 'required|integer'])->with(['id_entidade' => $id])->passesOrFail();
-                return $this->repository->delete($id);
+
+                if ($this->repository->delete($id)) {
+                    return 'true';
+                } else {
+                    return 'false';
+                }
 
             } catch (ValidatorException $e) {
                 return [
