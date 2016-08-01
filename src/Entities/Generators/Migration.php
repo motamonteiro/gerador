@@ -41,7 +41,7 @@ class Migration
 
             $stubColunas = '';
             $migrationFK = '';
-            $flgTimeStamps = false;
+            $flgTimeStamps = true;
 
 
             foreach ($tabela->getColunas() as $coluna) {

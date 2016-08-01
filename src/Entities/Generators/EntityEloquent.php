@@ -38,7 +38,7 @@ class EntityEloquent
         foreach ($tabelas as $tabela) {
 
             $stubFuncoesBelongsTo = '';
-            $flgTimeStamps = false;
+            $flgTimeStamps = true;
             foreach ($tabela->getColunas() as $coluna) {
 
                 if ($coluna->getCampoMinusculo() == 'created_at') {

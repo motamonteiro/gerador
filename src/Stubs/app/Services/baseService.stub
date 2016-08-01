@@ -2,6 +2,7 @@
 
 $NAMESPACE$
 
+use $PROJETO$\Enums\PlatformEnum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
@@ -13,6 +14,8 @@ use Prettus\Validator\Exceptions\ValidatorException;
  */
 class BaseService
 {
+    protected $platform = '';
+
     public function listar($colunaOrdenacao = '', $posicaoOrdenacao = 'desc', $qtdRegistros = 6)
         {
             try {
@@ -143,8 +146,13 @@ class BaseService
             $colunas = array_keys($data);
             foreach ($colunas as $coluna) {
                 //transforma campos que comecam com data_ do formato d/m/Y para Y-m-d
-                if (substr($coluna, 0, 5) == 'data_') {
-                    $data[$coluna] = dateSQL($data[$coluna]);
+                if ((substr($coluna, 0, 4) == 'dat_') || (substr($coluna, 0, 5) == 'data_')) {
+
+                    if(strlen($data[$coluna]) > 10){
+                        $data[$coluna] = dateTimeSQL($data[$coluna]);
+                    }else{
+                        $data[$coluna] = dateSQL($data[$coluna]);
+                    }
                 }
                 //encripta o password
                 if (substr($coluna, 0, 8) == 'password') {
@@ -153,4 +161,42 @@ class BaseService
             }
             return $data;
         }
+
+        /**
+         *
+         */
+        public function setPresenter()
+        {
+            if($this->platform == PlatformEnum::Mobile['value']){
+                $presenter = $this->repository->makePresenter($this->repository->presenter());
+                $presenter->setMobileTransformer();
+                $this->repository->setPresenter($presenter);
+            }
+
+            return $this;
+        }
+
+
+        /**
+         * @param $platform
+         * @param bool $flgSetPresenter
+         * @return $this
+         */
+        public function setPlatform($platform, $flgSetPresenter = false)
+        {
+            $this->platform = $platform;
+            if($flgSetPresenter){
+                $this->setPresenter();
+            }
+            return $this;
+        }
+
+        /**
+         * @return string
+         */
+        public function getPlatform()
+        {
+            return $this->platform;
+        }
+
 }

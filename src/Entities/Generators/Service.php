@@ -51,6 +51,7 @@ class Service
         }
 
         $replaces = [
+            'PROJETO' => $this->app['config']['project_name'],
             'NAMESPACE' => 'namespace '.$this->app['config']['project_name'].'\Services;',
         ];
         $stub = preencherStub($this->stub_path, 'baseService', $replaces);

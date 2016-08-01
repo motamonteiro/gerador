@@ -12,15 +12,33 @@ use Prettus\Repository\Presenter\FractalPresenter;
  */
 class $CLASS$Presenter extends FractalPresenter
 {
+     protected $transformer;
 
-    /**
-     * Transformer
-     *
-     * @return \League\Fractal\TransformerAbstract
-     */
+     /**
+      * $CLASS$Presenter constructor.
+      */
+     public function __construct()
+     {
+         parent::__construct();
+         $this->transformer = new $CLASS$Transformer();
+     }
+
+     /**
+      * Transformer
+      *
+      * @return \League\Fractal\TransformerAbstract
+      */
      public function getTransformer()
      {
-        return new $CLASS$Transformer();
+         return $this->transformer;
+     }
+
+
+     /**
+      *
+      */
+     public function setMobileTransformer(){
+         $this->transformer = new \$PROJETO$\Transformers\V1\Mobile\$CLASS$Transformer();
      }
 }
 
