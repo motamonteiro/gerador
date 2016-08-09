@@ -79,10 +79,18 @@ class Transformer
                 }
 
                 $replaces = [
-                    'NOME_COLUNA_CAMEL_CASE_LC_FIRST' => $coluna->getCampoCamelCaseLcFirst(),
+                    'NOME_COLUNA_MINUSCULO_MODEL' => '$model->'.$coluna->getCampoMinusculo(),
                     'NOME_COLUNA_MINUSCULO' => $coluna->getCampoMinusculo(),
                 ];
                 $stubReturnTransformer .= preencherStub($this->stub_path, '_RETURN_TRANSFORM', $replaces);
+
+                if(substr($coluna->getCampoMinusculo(),0,4) == "dat_"){
+                    $replaces = [
+                        'NOME_COLUNA_MINUSCULO_MODEL' => "dateTimeBR(".'$model->'.$coluna->getCampoMinusculo().")",
+                        'NOME_COLUNA_MINUSCULO' => $coluna->getCampoMinusculo()."_br",
+                    ];
+                    $stubReturnTransformer .= preencherStub($this->stub_path, '_RETURN_TRANSFORM', $replaces);
+                }
 
             }
 
