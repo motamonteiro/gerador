@@ -39,6 +39,7 @@ class BaseService
             try {
                 $this->validator->setRules(['id_entidade' => 'required|integer'])->with(['id_entidade' => $id])->passesOrFail();
                 $retorno = $this->repository->skipCriteria()->find($id);
+
                 if(!$retorno){
                     return [
                         'error' => true,
@@ -167,11 +168,14 @@ class BaseService
          */
         public function setPresenter()
         {
+            $presenter = $this->repository->makePresenter($this->repository->presenter());
+            $presenter->setFlgDefaultIncludes(true);
+
             if($this->platform == PlatformEnum::Mobile['value']){
-                $presenter = $this->repository->makePresenter($this->repository->presenter());
                 $presenter->setMobileTransformer();
-                $this->repository->setPresenter($presenter);
             }
+
+            $this->repository->setPresenter($presenter);
 
             return $this;
         }

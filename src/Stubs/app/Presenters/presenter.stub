@@ -13,6 +13,7 @@ use Prettus\Repository\Presenter\FractalPresenter;
 class $CLASS$Presenter extends FractalPresenter
 {
      protected $transformer;
+     protected $flgDefaultIncludes;
 
      /**
       * $CLASS$Presenter constructor.
@@ -21,6 +22,23 @@ class $CLASS$Presenter extends FractalPresenter
      {
          parent::__construct();
          $this->transformer = new $CLASS$Transformer();
+         $this->flgDefaultIncludes = false; //Por padrão, não usar default includes
+     }
+
+     /**
+      * @return boolean
+      */
+     public function getFlgDefaultIncludes()
+     {
+         return $this->flgDefaultIncludes;
+     }
+
+     /**
+      * @param boolean
+      */
+     public function setFlgDefaultIncludes($flgDefaultIncludes)
+     {
+         $this->flgDefaultIncludes = $flgDefaultIncludes;
      }
 
      /**
@@ -30,6 +48,10 @@ class $CLASS$Presenter extends FractalPresenter
       */
      public function getTransformer()
      {
+         if(!$this->getFlgDefaultIncludes()) {
+             $this->transformer->setDefaultIncludes([]);
+         }
+
          return $this->transformer;
      }
 
