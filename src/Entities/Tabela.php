@@ -53,6 +53,27 @@ class Tabela
     }
 
     /**
+     * Retorna o prefixo da tabela como camel case
+     * @return string
+     */
+    public function getPrefixoCamelCase()
+    {
+        $nome = str_replace('_', ' ', $this->getPrefixo());
+        $nome = ucwords(strtolower($nome));
+        $nome = str_replace(' ', '', $nome);
+        return $nome;
+    }
+
+    /**
+     * Retorna o prefixo da tabela como camel case
+     * @return string
+     */
+    public function getPrefixoMinusculo()
+    {
+        return strtolower($this->getPrefixo());
+    }
+
+    /**
      * @param null $prefixo
      * @return Tabela
      */

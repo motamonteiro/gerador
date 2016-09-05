@@ -41,7 +41,12 @@ if (!function_exists('listarObjTabelas')) {
                             $nulo = ($nomeDaColunaEstrangeira['Null'] == 'NO') ? 0 : 1;
                             $auto_increment = ($nomeDaColunaEstrangeira['Extra'] == 'auto_increment') ? 1 : 0;
                             $colunaEstrangeira = new \MotaMonteiro\Gerador\Entities\Coluna($nomeDaColunaEstrangeira['Field'], $nomeDaColunaEstrangeira['Type'], $nulo, $nomeDaColunaEstrangeira['Key'], $auto_increment);
-                            $coluna->setCampoTabelaEstrangeira($tabelaEstrangeira->getNome());
+                            if($tabelaEstrangeira->getPrefixo() != ''){
+                                $coluna->setCampoTabelaEstrangeira($tabelaEstrangeira->getPrefixoMinusculo()."_".$tabelaEstrangeira->getNome());
+                            }else{
+                                $coluna->setCampoTabelaEstrangeira($tabelaEstrangeira->getNome());
+                            }
+
                             $coluna->setCampoChaveEstrangeira($nomeDaTabelaEstrangeira['coluna']);
                             $tabelaEstrangeira->addColuna($colunaEstrangeira);
                         }

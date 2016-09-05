@@ -93,8 +93,14 @@ class Migration
                         }
 
                         if($coluna->getChave() == 'MUL') {
-                            $migrationFK .= "
+                            if($tabela->getPrefixo() != ''){
+                                $migrationFK .= "
+            \$table->foreign('".$coluna->getCampoMinusculo()."')->references('".$coluna->getCampoChaveEstrangeiraMinusculo()."')->on('".$tabela->getPrefixoMinusculo().'_'.$coluna->getCampoTabelaEstrangeiraMinusculo()."');";
+                            }else{
+                                $migrationFK .= "
             \$table->foreign('".$coluna->getCampoMinusculo()."')->references('".$coluna->getCampoChaveEstrangeiraMinusculo()."')->on('".$coluna->getCampoTabelaEstrangeiraMinusculo()."');";
+                            }
+
                             //$migrationColuna .= "\$table->foreign('".$coluna->getCampoMinusculo()."')->references('".$coluna->getCampoChaveEstrangeiraMinusculo()."')->on('".$coluna->getCampoTabelaEstrangeiraMinusculo()."');";
                         }
                     }
@@ -113,7 +119,7 @@ class Migration
             }
 
             $replaces = [
-                'CLASS'                => $tabela->getNomeCamelCaseSingular(),
+                'CLASS'                => $tabela->getPrefixoCamelCase().$tabela->getNomeCamelCaseSingular(),
                 'NOME_COMPLETO_TABELA' => $tabela->getNomeCompletoMinusculo(),
                 '_COLUNAS'   => $stubColunas,
                 'TIMESTAMPS' => ($flgTimeStamps) ? '$table->timestamps();' : '',
