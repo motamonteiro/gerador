@@ -75,6 +75,10 @@ class Coluna
      */
     public function getCampoTabelaEstrangeira()
     {
+        if(!empty($_ENV['DB_TABLE_PREFIX'])) {
+            return str_replace($_ENV['DB_TABLE_PREFIX'].'_', '', $this->campoTabelaEstrangeira);
+        }
+
         return $this->campoTabelaEstrangeira;
     }
 

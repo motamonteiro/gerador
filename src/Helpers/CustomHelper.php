@@ -11,6 +11,25 @@ if (!function_exists('preencherStub')) {
     }
 }
 
+if (!function_exists('listarConfiguracoesDotEnv')) {
+    function listarConfiguracoesDotEnv($app){
+
+        $config = '';
+
+        $config .= "<strong>DB_CONNECTION</strong> = ".$_ENV['DB_CONNECTION']."<br><br>";
+        $config .= "<strong>DB_HOST</strong> = ".$_ENV['DB_HOST']."<br><br>";
+        $config .= "<strong>DB_NAME</strong> = ".$_ENV['DB_NAME']."<br><br>";
+        $config .= "<strong>DB_USERNAME</strong> = ".$_ENV['DB_USERNAME']."<br><br>";
+        $config .= "<strong>DB_PASSWORD</strong> = ".$_ENV['DB_PASSWORD']."<br><br>";
+        $config .= "<strong>DB_TABLE_PREFIX</strong> = ".$_ENV['DB_TABLE_PREFIX']."<br><br>";
+        $config .= "<strong>PROJECT_FRAMEWORK</strong> = ".$_ENV['PROJECT_FRAMEWORK']."<br><br>";
+        $config .= "<strong>PROJECT_NAME</strong> = ".$_ENV['PROJECT_NAME']."<br><br>";
+        $config .= "<strong>PROJECT_DIR</strong> = ".$_ENV['PROJECT_DIR']."<br><br>";
+
+        return $config;
+
+    }
+}
 if (!function_exists('listarObjTabelas')) {
     function listarObjTabelas($app) {
 

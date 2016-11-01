@@ -56,6 +56,13 @@ $app->get('/tabelas', function() use ($app) {
 
 });
 
+$app->get('/configuracoes', function() use ($app) {
+
+    echo listarConfiguracoesDotEnv($app);
+    exit;
+
+});
+
 $app->get('/limparArquivos', function() use ($app) {
 
     return new Response(limparDiretorios( $app['config']['destination_path'] ), 200);
