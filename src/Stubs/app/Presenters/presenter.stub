@@ -3,18 +3,14 @@
 $NAMESPACE$
 
 use $PROJETO$\Transformers\$CLASS$Transformer;
-use Prettus\Repository\Presenter\FractalPresenter;
 
 
 /**
  * Class $CLASS$Presenter
  * @package $NAMESPACE$
  */
-class $CLASS$Presenter extends FractalPresenter
+class $CLASS$Presenter extends BasePresenter
 {
-     protected $transformer;
-     protected $flgDefaultIncludes;
-
      /**
       * $CLASS$Presenter constructor.
       */
@@ -22,46 +18,5 @@ class $CLASS$Presenter extends FractalPresenter
      {
          parent::__construct();
          $this->transformer = new $CLASS$Transformer();
-         $this->flgDefaultIncludes = false; //Por padrão, não usar default includes
-     }
-
-     /**
-      * @return boolean
-      */
-     public function getFlgDefaultIncludes()
-     {
-         return $this->flgDefaultIncludes;
-     }
-
-     /**
-      * @param boolean
-      */
-     public function setFlgDefaultIncludes($flgDefaultIncludes)
-     {
-         $this->flgDefaultIncludes = $flgDefaultIncludes;
-     }
-
-     /**
-      * Transformer
-      *
-      * @return \League\Fractal\TransformerAbstract
-      */
-     public function getTransformer()
-     {
-         if(!$this->getFlgDefaultIncludes()) {
-             $this->transformer->setDefaultIncludes([]);
-         }
-
-         return $this->transformer;
-     }
-
-
-     /**
-      *
-      */
-     public function setMobileTransformer(){
-         $this->transformer = new \$PROJETO$\Transformers\V1\Mobile\$CLASS$Transformer();
      }
 }
-
-

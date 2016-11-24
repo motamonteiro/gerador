@@ -52,6 +52,16 @@ class Presenter
 
         }
 
+        $replaces = [
+            'NAMESPACE' => 'namespace '.$this->app['config']['project_name'].'\Presenters;',
+        ];
+
+        $stub = preencherStub($this->stub_path, 'basePresenter', $replaces);
+
+        $arquivo = $this->destination_path.'BasePresenter.php';
+        criarArquivo($stub, $arquivo);
+        $arquivosCriados .= $arquivo.'<br>';
+
         return $arquivosCriados;
     }
 
