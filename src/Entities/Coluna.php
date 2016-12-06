@@ -337,6 +337,14 @@ class Coluna
             $regra .= '|max:'.$match[1];
         }
 
+        if(substr($this->getTipo(),0,7) == 'decimal'){
+            preg_match('#\((.*?)\)#', $this->getTipo(), $match); //Pega o que estiver entre parentesis
+            $result = explode(',', $match[1]);
+            $max = $result[0];
+            //$decimal = $result[1];
+            $regra .= 'numeric|max:'.$max;
+        }
+
         if(substr($this->getTipo(),0,4) == 'date'){
             $regra .= '|date_format:d/m/Y';
         }

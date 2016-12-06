@@ -166,41 +166,18 @@ class BaseService
         /**
          *
          */
-        public function setPresenter()
+        public function setPresenter($flgDefaultIncludes = false, $transformer = "")
         {
             $presenter = $this->repository->makePresenter($this->repository->presenter());
-            $presenter->setFlgDefaultIncludes(true);
+            $presenter->setFlgDefaultIncludes($flgDefaultIncludes);
 
-            if($this->platform == PlatformEnum::Mobile['value']){
-                $presenter->setMobileTransformer();
+            if($transformer != ""){
+                $presenter->setTransformer($transformer);
             }
 
             $this->repository->setPresenter($presenter);
 
             return $this;
-        }
-
-
-        /**
-         * @param $platform
-         * @param bool $flgSetPresenter
-         * @return $this
-         */
-        public function setPlatform($platform, $flgSetPresenter = false)
-        {
-            $this->platform = $platform;
-            if($flgSetPresenter){
-                $this->setPresenter();
-            }
-            return $this;
-        }
-
-        /**
-         * @return string
-         */
-        public function getPlatform()
-        {
-            return $this->platform;
         }
 
 }
