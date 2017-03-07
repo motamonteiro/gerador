@@ -115,7 +115,7 @@ class Tabela
      */
     public function addTabelaEstrangeira($tabelaEstrangeira)
     {
-        $this->tabelasEstrangeiras[] = $tabelaEstrangeira;
+        array_push($this->tabelasEstrangeiras,$tabelaEstrangeira);
         return $this;
     }
     
