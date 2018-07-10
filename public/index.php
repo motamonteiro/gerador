@@ -22,13 +22,10 @@ $app['config'] = [
     'stub_path' =>  '../src/Stubs/',
     'array_destination_folder' => [
         'EntityEloquent'      => 'app/Entities/Eloquent/',
-        'EntityOrmSefaz'      => 'app/Entities/OrmSefaz/',
-        'Presenter'           => 'app/Presenters/',
         'RepositoryInterface' => 'app/Repositories/Interfaces/',
         'Provider'            => 'app/Providers/',
         'RepositoryEloquent'  => 'app/Repositories/Eloquent/',
-        'Transformer'         => 'app/Transformers/',
-        'Validator'           => 'app/Validators/',
+        'Resource'            => 'app/Http/Resources/',
         'Service'             => 'app/Services/',
         'Controller'          => 'app/Http/Controllers/',
         'Route'               => 'app/Http/',
@@ -79,20 +76,6 @@ $app->get('/entityEloquent', function() use ($app) {
     
 });
 
-$app->get('/entityOrmSefaz', function() use ($app) {
-
-    $generator = new \MotaMonteiro\Gerador\Entities\Generators\EntityOrmSefaz($app);
-    return new Response($generator->gerarArquivo(), 200);
-    
-});
-
-$app->get('/presenter', function() use ($app) {
-
-    $generator = new \MotaMonteiro\Gerador\Entities\Generators\Presenter($app);
-    return new Response($generator->gerarArquivo(), 200);
-
-});
-
 $app->get('/repositoryInterface', function() use ($app) {
 
     $generator = new \MotaMonteiro\Gerador\Entities\Generators\RepositoryInterface($app);
@@ -114,16 +97,9 @@ $app->get('/repositoryEloquent', function() use ($app) {
 
 });
 
-$app->get('/transformer', function() use ($app) {
+$app->get('/resource', function() use ($app) {
 
-    $generator = new \MotaMonteiro\Gerador\Entities\Generators\Transformer($app);
-    return new Response($generator->gerarArquivo(), 200);
-
-});
-
-$app->get('/validator', function() use ($app) {
-
-    $generator = new \MotaMonteiro\Gerador\Entities\Generators\Validator($app);
+    $generator = new \MotaMonteiro\Gerador\Entities\Generators\Resource($app);
     return new Response($generator->gerarArquivo(), 200);
 
 });
@@ -166,7 +142,7 @@ $app->get('/generateAll', function() use ($app) {
     $arquivoGerado = '';
     foreach ($app['config']['array_destination_folder'] as $gerador => $item) {
 
-        if(($gerador <> 'EntityOrmSefaz') && ($gerador <> 'LangPtBrValidation') && ($gerador <> 'Migration')){
+        if(($gerador <> 'LangPtBrValidation') && ($gerador <> 'Migration')){
 
             $nomeClasse = "\\MotaMonteiro\\Gerador\\Entities\\Generators\\".str_replace("/","\\",$gerador);
             $generator = new $nomeClasse($app);

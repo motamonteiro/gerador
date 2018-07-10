@@ -3,9 +3,8 @@
 $NAMESPACE$
 
 use $PROJETO$\Entities\Eloquent\$CLASS$;
-use $PROJETO$\Presenters\$CLASS$Presenter;
+use $PROJETO$\Http\Resources\$CLASS$Resource;
 use $PROJETO$\Repositories\Interfaces\$CLASS$Interface;
-use Prettus\Repository\Criteria\RequestCriteria;
 
 
 /**
@@ -28,9 +27,21 @@ class $CLASS$Repository extends BaseRepository implements $CLASS$Interface
         return $CLASS$::class;
     }
 
-    public function presenter()
+    public function resource()
     {
-        return $CLASS$Presenter::class;
+        return $CLASS$Resource::class;
+    }
+
+    public function rules($idUpdate = '')
+    {
+        return [
+$_RULES$        ];
+    }
+
+    public function labels()
+    {
+        return [
+$_ATTRIBUTES$        ];
     }
 
 }

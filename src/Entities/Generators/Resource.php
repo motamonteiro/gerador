@@ -11,7 +11,7 @@ namespace MotaMonteiro\Gerador\Entities\Generators;
 
 use Silex\Application;
 
-class Transformer
+class Resource
 {
 
     /**
@@ -26,8 +26,8 @@ class Transformer
     function __construct(Application $app)
     {
         $this->app = $app;
-        $this->stub_path = $this->app['config']['stub_path'].$this->app['config']['array_destination_folder']['Transformer'];
-        $this->destination_path = $this->app['config']['destination_path'].$this->app['config']['array_destination_folder']['Transformer'];
+        $this->stub_path = $this->app['config']['stub_path'].$this->app['config']['array_destination_folder']['Resource'];
+        $this->destination_path = $this->app['config']['destination_path'].$this->app['config']['array_destination_folder']['Resource'];
     }
 
     public function gerarArquivo()
@@ -39,7 +39,7 @@ class Transformer
         foreach ($tabelas as $tabela) {
 
             $stubDefaultIncludes = '';
-            $stubReturnTransformer = '';
+            $stubReturnResource = '';
             $stubFunctionIncludes = '';
 
             $replaces = [
@@ -79,33 +79,34 @@ class Transformer
                 }
 
                 $replaces = [
-                    'NOME_COLUNA_MINUSCULO_MODEL' => '$model->'.$coluna->getCampoMinusculo(),
-                    'NOME_COLUNA_MINUSCULO' => $coluna->getCampoMinusculo(),
+                    'NOME_COLUNA_MINUSCULO_MODEL' => '$this->'.$coluna->getCampoMinusculo(),
+                    'NOME_COLUNA_MINUSCULO' => $coluna->getCampoCamelCaseLcFirst(),
                 ];
-                $stubReturnTransformer .= preencherStub($this->stub_path, '_RETURN_TRANSFORM', $replaces);
+                $stubReturnResource .= preencherStub($this->stub_path, '_RETURN_RESOURCE', $replaces);
 
                 if(substr($coluna->getCampoMinusculo(),0,4) == "dat_"){
                     $replaces = [
-                        'NOME_COLUNA_MINUSCULO_MODEL' => "dateTimeBR(".'$model->'.$coluna->getCampoMinusculo().")",
+                        'NOME_COLUNA_MINUSCULO_MODEL' => '$helper->dataFormatoDestino($this->'.$coluna->getCampoMinusculo().', $helper->FORMATO_DATA_HORA_BR)',
                         'NOME_COLUNA_MINUSCULO' => $coluna->getCampoMinusculo()."_br",
                     ];
-                    $stubReturnTransformer .= preencherStub($this->stub_path, '_RETURN_TRANSFORM', $replaces);
+                    $stubReturnResource .= preencherStub($this->stub_path, '_RETURN_RESOURCE', $replaces);
                 }
 
             }
 
 
             $replaces = [
-                'NAMESPACE'         => 'namespace '.$this->app['config']['project_name'].'\Transformers;',
+                'NAMESPACE'         => 'namespace '.$this->app['config']['project_name'].'\Http\Resources;',
+                'PROJETO'           => $this->app['config']['project_name'],
                 'CLASS'             => $tabela->getNomeCamelCaseSingular(),
                 '_USE_ENTITIES'     => $stubUseEntities,
                 '_DEFAULT_INCLUDES' => $stubDefaultIncludes,
-                '_RETURN_TRANSFORM' => $stubReturnTransformer,
-                '_FUNCTION_INCLUDES' => $stubFunctionIncludes
+                '_RETURN_RESOURCE' => $stubReturnResource,
+                '_FUNCTION_INCLUDES' => $stubFunctionIncludes,
             ];
-            $stub = preencherStub($this->stub_path, 'transformer', $replaces);
+            $stub = preencherStub($this->stub_path, 'resource', $replaces);
 
-            $arquivo = $this->destination_path.$tabela->getNomeCamelCaseSingular().'Transformer.php';
+            $arquivo = $this->destination_path.$tabela->getNomeCamelCaseSingular().'Resource.php';
             criarArquivo($stub, $arquivo);
             $arquivosCriados .= $arquivo.'<br>';
         }

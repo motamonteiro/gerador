@@ -2,10 +2,11 @@
 
 $NAMESPACE$
 
-use $PROJETO$\Enums\PlatformEnum;
+use $PROJETO$\Helpers\Helper;
+use $PROJETO$\Helpers\Traits\MsgTrait;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Prettus\Validator\Contracts\ValidatorInterface;
-use Prettus\Validator\Exceptions\ValidatorException;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 
 /**
@@ -14,170 +15,208 @@ use Prettus\Validator\Exceptions\ValidatorException;
  */
 class BaseService
 {
-    protected $platform = '';
+    use MsgTrait;
 
-    public function listar($colunaOrdenacao = '', $posicaoOrdenacao = 'desc', $qtdRegistros = 6)
-        {
-            try {
+    const ID_ENTIDADE = 'idEntidade';
 
-                if($colunaOrdenacao == '') {
-                    return $this->repository->paginate($qtdRegistros);
-                }
+    public function helper()
+    {
+        return new Helper();
+    }
 
-                return $this->repository->orderBy($colunaOrdenacao, $posicaoOrdenacao)->paginate($qtdRegistros);
+    public function listar($colunaOrdenacao = '', $posicaoOrdenacao = '', $qtdRegistros = 10, $colunasSelect = ['*'])
+    {
+        $resultado = ($colunaOrdenacao == '') ? $this->repository->paginate($qtdRegistros, $colunasSelect) : $this->repository->orderBy($colunaOrdenacao, $posicaoOrdenacao)->paginate($qtdRegistros, $colunasSelect);
+        return $this->retornarResultado($resultado, true, true);
+    }
 
-            } catch (ValidatorException $e) {
-                return [
-                    'error' => true,
-                    'message' => $e->getMessageBag()
-                ];
-            }
+    public function detalharPorId($id, $colunasSelect = ['*'])
+    {
+        try {
+            $this->aplicarRegrasThrow([self::ID_ENTIDADE => $id], [self::ID_ENTIDADE => 'required|integer']);
+            $resultado = $this->repository->skipCriteria()->find($id, $colunasSelect);
+            return ($resultado) ? $this->retornarResultado($resultado, false, true) : $this->retornarMsgErro('Id não encontrado');
+
+        } catch (ModelNotFoundException $e) {
+            return $this->retornarMsgErro('Id '.$id.' não encontrado ao tentar detalhar');
+        } catch (ValidationException $e) {
+            return $this->retornarMsgErro($e->validator);
+        } catch (\Exception $e) {
+            return $this->retornarMsgErro($e->getMessage());
+        }
+    }
+
+    public function criar(array $dados)
+    {
+        try{
+            $this->aplicarRegrasThrow($dados, $this->repository->rules(), $this->repository->labels());
+            $dados = $this->camposFormatoSql($dados, false);
+            $resultado = $this->repository->create($dados);
+            return $this->retornarResultado($resultado, false, true);
+        } catch (ValidationException $e) {
+            return $this->retornarMsgErro($e->validator);
+        } catch (\Exception $e) {
+            return $this->retornarMsgErro($e->getMessage());
+        }
+    }
+
+    public function atualizar(array $dados, $id)
+    {
+        try{
+            $this->aplicarRegrasThrow($dados, $this->repository->rules($id), $this->repository->labels());
+            $dados = $this->camposFormatoSql($dados, false);
+            $resultado = $this->repository->update($dados, $id);
+            return $this->retornarResultado($resultado, false, true);
+        } catch (ModelNotFoundException $e) {
+            return $this->retornarMsgErro('Id '.$id.' não encontrado ao tentar atualizar');
+        } catch (ValidationException $e) {
+            return $this->retornarMsgErro($e->validator);
+        } catch (\Exception $e) {
+            return $this->retornarMsgErro($e->getMessage());
+        }
+    }
+
+    public function excluir($id)
+    {
+        try {
+            $this->aplicarRegrasThrow([self::ID_ENTIDADE => $id], [self::ID_ENTIDADE => 'required|integer']);
+            return ($this->repository->delete($id)) ? $this->retornarMsgSucesso('Registro excluído com sucesso') : $this->retornarMsgErro('Erro ao excluir registro');
+        } catch (ModelNotFoundException $e) {
+            return $this->retornarMsgErro('Id '.$id.' não encontrado ao tentar excluir');
+        } catch (ValidationException $e) {
+            return $this->retornarMsgErro($e->validator);
+        } catch (\Exception $e) {
+            return $this->retornarMsgErro($e->getMessage());
+        }
+    }
+
+    public function aplicarRegras($campos = [], $regras = [], $nomeCampos = [], $flgCamposCamelCase = true, $flgTrowValidationException = false)
+    {
+        $regras = ($flgCamposCamelCase) ? $this->camelCaseArrayKeys($regras) : $this->snakeCaseArrayKeys($regras);
+        $nomeCampos = ($flgCamposCamelCase) ? $this->camelCaseArrayKeys($nomeCampos) : $this->snakeCaseArrayKeys($nomeCampos);
+
+        $validator = Validator::make($campos, $regras);
+
+        if (!empty($nomeCampos)) {
+            $validator->setAttributeNames($nomeCampos);
         }
 
-        public function detalharPorId($id)
-        {
-            try {
-                $this->validator->setRules(['id_entidade' => 'required|integer'])->with(['id_entidade' => $id])->passesOrFail();
-                $retorno = $this->repository->skipCriteria()->find($id);
-
-                if(!$retorno){
-                    return [
-                        'error' => true,
-                        'message' => "Id não encontrado"
-                    ];
-                }
-                return $retorno;
-
-            } catch (ValidatorException $e) {
-                return [
-                    'error' => true,
-                    'message' => $e->getMessageBag()
-                ];
-            } catch (ModelNotFoundException $e) {
-                return [
-                    'error' => true,
-                    'message' => "Id não encontrado."
-                ];
+        if ($validator->fails()) {
+            if ($flgTrowValidationException) {
+                throw new ValidationException($validator->messages());
+            } else {
+                return $this->retornarMsgErro($validator->messages());
             }
         }
+        return $campos;
+    }
 
-        public function criar(array $data, $flgRuleCreate=false)
-        {
-            try {
-                if($flgRuleCreate) {
-                    $this->validator->setRules($this->rulesPadrao)->with($data)->passesOrFail(ValidatorInterface::RULE_CREATE);
-                } else {
-                    $this->validator->setRules($this->rulesPadrao)->with($data)->passesOrFail();
-                }
+    public function aplicarRegrasThrow ($campos = [], $regras = [], $nomeCampos = [], $flgCamposCamelCase = true)
+    {
+        return $this->aplicarRegras($campos, $regras, $nomeCampos, $flgCamposCamelCase, true);
+    }
 
-                $data = $this->transformaDadosParaUtilizarNoSql($data);
-
-                return $this->repository->create($data);
-
-            } catch (ValidatorException $e) {
-                return [
-                    'error' => true,
-                    'message' => $e->getMessageBag()
-                ];
+    public function snakeCaseArrayKeys(array $campos)
+    {
+        $keys = array_keys($campos);
+        foreach ($keys as $key) {
+            $snakeCaseKey = snake_case($key);
+            if ($snakeCaseKey != $key) {
+                $campos[$snakeCaseKey] = $campos[$key];
+                unset($campos[$key]);
             }
         }
+        return $campos;
+    }
 
-        public function atualizar(array $data, $id, $flgRuleUpdate=false)
-        {
-            try {
-
-                if($flgRuleUpdate) {
-                    $this->validator->setId($id)->setRules($this->rulesPadrao)->with($data)->passesOrFail(ValidatorInterface::RULE_UPDATE);
-                } else {
-                    $this->validator->setId($id)->setRules($this->rulesPadrao)->with($data)->passesOrFail();
-                }
-
-                $data = $this->transformaDadosParaUtilizarNoSql($data);
-
-                return $this->repository->update($data, $id);
-
-            } catch (ValidatorException $e) {
-                return [
-                    'error' => true,
-                    'message' => $e->getMessageBag()
-                ];
+    public function camelCaseArrayKeys(array $campos)
+    {
+        $keys = array_keys($campos);
+        foreach ($keys as $key) {
+            $camelCaseKey = camel_case($key);
+            if ($camelCaseKey != $key) {
+                $campos[$camelCaseKey] = $campos[$key];
+                unset($campos[$key]);
             }
         }
+        return $campos;
+    }
 
-        public function excluir($id)
-        {
-            try {
-                $this->validator->setRules(['id_entidade' => 'required|integer'])->with(['id_entidade' => $id])->passesOrFail();
+    public function camposFormatoBr($campos, $flgCamposCamelCase = true, $flgVlrMoeda = true)
+    {
+        $colunas = array_keys($campos);
+        foreach ($colunas as $coluna) {
 
-                if ($this->repository->delete($id)) {
-                    return 'true';
-                } else {
-                    return 'false';
-                }
-
-            } catch (ValidatorException $e) {
-                return [
-                    'error' => true,
-                    'message' => $e->getMessageBag()
-                ];
-            }
-        }
-
-        /**
-         *
-         * @param array $where ["ID_CAMPO"=>$campo] / [["OR","ID_CAMPO",$campo], ["AND","ID_CAMPO",$campo]]
-         * @return array
-         */
-        public function excluirWhere(array $where)
-        {
-            try {
-                $this->validator->setRules(['where' => 'required|array'])->with(['where' => $where])->passesOrFail();
-                return $this->repository->deleteWithCondition($where);
-
-            } catch (ValidatorException $e) {
-                return [
-                    'error' => true,
-                    'message' => $e->getMessageBag()
-                ];
-            }
-        }
-
-        protected function transformaDadosParaUtilizarNoSql($data)
-        {
-            $colunas = array_keys($data);
-            foreach ($colunas as $coluna) {
-                //transforma campos que comecam com data_ do formato d/m/Y para Y-m-d
-                if ((substr($coluna, 0, 4) == 'dat_') || (substr($coluna, 0, 5) == 'data_')) {
-
-                    if(strlen($data[$coluna]) > 10){
-                        $data[$coluna] = dateTimeSQL($data[$coluna]);
-                    }else{
-                        $data[$coluna] = dateSQL($data[$coluna]);
+            //transforma campos de data
+            if (substr($coluna, 0, 3) == 'dat') {
+                if (strlen($campos[$coluna]) > 10) {
+                    if (substr($campos[$coluna], 4, 1) == '-') {
+                        $campos[$coluna] = $this->helper()->dataHoraFormatoSqlParaBr($campos[$coluna]);
+                    }
+                } elseif ($campos[$coluna] != "") {
+                    if (substr($campos[$coluna], 4, 1) == '-') {
+                        if (strlen($campos[$coluna]) == 7) {
+                            $campos[$coluna] = $this->helper()->dataFormatoOrigemDestino($campos[$coluna], 'Y-m', 'm/Y');
+                        } else {
+                            $campos[$coluna] = $this->helper()->dataFormatoSqlParaBr($campos[$coluna]);
+                        }
                     }
                 }
-                //encripta o password
-                if (substr($coluna, 0, 8) == 'password') {
-                    $data[$coluna] = bcrypt($data[$coluna]);
+            }
+
+            //transforma campos de valores
+            if (substr($coluna, 0, 3) == 'vlr') {
+                $campos[$coluna] = ($flgVlrMoeda) ? $this->helper()->numeroFormatoSqlParaMoedaBr($campos[$coluna]) : $this->helper()->numeroFormatoSqlParaBr($campos[$coluna]);
+            }
+        }
+
+        return ($flgCamposCamelCase) ? $this->camelCaseArrayKeys($campos) : $this->snakeCaseArrayKeys($campos);
+    }
+
+    public function camposFormatoSql(array $campos, $flgCamposCamelCase = true)
+    {
+        $colunas = array_keys($campos);
+        foreach ($colunas as $coluna) {
+
+            //transforma campos de data
+            if (substr($coluna, 0, 3) == 'dat') {
+                if (strlen($campos[$coluna]) > 10) {
+                    if (substr($campos[$coluna], 2, 1) == '/') {
+                        $campos[$coluna] = $this->helper()->dataHoraBrParaSql($campos[$coluna]);
+                    }
+                } elseif ($campos[$coluna] != "") {
+                    if (substr($campos[$coluna], 2, 1) == '/') {
+                        if (strlen($campos[$coluna]) == 7) {
+                            $campos[$coluna] = $this->helper()->dataFormatoOrigemDestino($campos[$coluna], 'm/Y', 'Y-m');
+                        } else {
+                            $campos[$coluna] = $this->helper()->dataFormatoBrParaSql($campos[$coluna]);
+                        }
+                    }
                 }
             }
-            return $data;
-        }
 
-        /**
-         *
-         */
-        public function setPresenter($flgDefaultIncludes = false, $transformer = "")
-        {
-            $presenter = $this->repository->makePresenter($this->repository->presenter());
-            $presenter->setFlgDefaultIncludes($flgDefaultIncludes);
-
-            if($transformer != ""){
-                $presenter->setTransformer($transformer);
+            //transforma campos de valores
+            if (substr($coluna, 0, 3) == 'vlr') {
+                $campos[$coluna] = $this->helper()->numeroFormatoBrParaSql($campos[$coluna]);
             }
-
-            $this->repository->setPresenter($presenter);
-
-            return $this;
         }
+
+        return ($flgCamposCamelCase) ? $this->camelCaseArrayKeys($campos) : $this->snakeCaseArrayKeys($campos);
+    }
+
+    public function iniciarTransacao()
+    {
+        return $this->repository->iniciarTransacao();
+    }
+
+    public function commitarTransacao($transacao)
+    {
+        $this->repository->commitarTransacao($transacao);
+    }
+
+    public function rollBackTransacao($transacao)
+    {
+        $this->repository->rollBackTransacao($transacao);
+    }
 
 }

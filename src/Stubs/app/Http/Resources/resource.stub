@@ -1,0 +1,27 @@
+<?php
+
+$NAMESPACE$
+
+use $PROJETO$\Helpers\Helper;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/**
+ * Class $CLASS$Resource
+ * @package $NAMESPACE$
+ */
+class $CLASS$Resource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @return array
+     */
+    public function toArray($request)
+    {
+        $helper = new Helper();
+
+        return [
+$_RETURN_RESOURCE$        ];
+    }
+}

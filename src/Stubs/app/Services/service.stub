@@ -2,8 +2,8 @@
 
 $NAMESPACE$
 
+use $PROJETO$\Repositories\Eloquent\$CLASS$Repository;
 use $PROJETO$\Repositories\Interfaces\$CLASS$Interface;
-use $PROJETO$\Validators\$CLASS$Validator;
 
 
 /**
@@ -13,25 +13,12 @@ use $PROJETO$\Validators\$CLASS$Validator;
 class $CLASS$Service extends BaseService
 {
     /**
-     * @var $CLASS$Interface
+     * @var $CLASS$Repository
      */
     protected $repository;
 
-    /**
-     * @var $CLASS$Validator
-     */
-    protected $validator;
-
-    /**
-     * @var array
-     */
-    protected $rulesPadrao;
-
-    public function __construct($CLASS$Interface $repository, $CLASS$Validator $validator)
+    public function __construct($CLASS$Interface $repository)
     {
         $this->repository = $repository;
-        $this->validator = $validator;
-        $this->rulesPadrao = $this->validator->getRules();
-
     }
 }

@@ -342,7 +342,7 @@ class Coluna
             $result = explode(',', $match[1]);
             $max = $result[0];
             //$decimal = $result[1];
-            $regra .= 'numeric|max:'.$max;
+            $regra .= '|numeric|max:'.$max;
         }
 
         if(substr($this->getTipo(),0,4) == 'date'){
