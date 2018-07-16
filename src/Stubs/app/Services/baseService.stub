@@ -168,6 +168,17 @@ class BaseService
             if (substr($coluna, 0, 3) == 'vlr') {
                 $campos[$coluna] = ($flgVlrMoeda) ? $this->helper()->numeroFormatoSqlParaMoedaBr($campos[$coluna]) : $this->helper()->numeroFormatoSqlParaBr($campos[$coluna]);
             }
+
+            //transforma campos de cpf em numeros
+            if (strtolower(str_replace('_', '', substr($coluna, 0, 6))) == 'codcpf') {
+                $campos[$coluna] = ($campos[$coluna] != '') ? $this->helper()->filtrarSomenteNumeros($campos[$coluna]) : $campos[$coluna];
+            }
+
+            //transforma campos de cnpj em numeros
+            if (strtolower(str_replace('_', '', substr($coluna, 0, 7))) == 'codcnpj') {
+                $campos[$coluna] = ($campos[$coluna] != '') ? $this->helper()->filtrarSomenteNumeros($campos[$coluna]) : $campos[$coluna];
+            }
+
         }
 
         return ($flgCamposCamelCase) ? $this->camelCaseArrayKeys($campos) : $this->snakeCaseArrayKeys($campos);
@@ -198,6 +209,16 @@ class BaseService
             //transforma campos de valores
             if (substr($coluna, 0, 3) == 'vlr') {
                 $campos[$coluna] = $this->helper()->numeroFormatoBrParaSql($campos[$coluna]);
+            }
+
+            //transforma campos de cpf em numeros
+            if (strtolower(str_replace('_', '', substr($coluna, 0, 6))) == 'codcpf') {
+                $campos[$coluna] = ($campos[$coluna] != '') ? $this->helper()->filtrarSomenteNumeros($campos[$coluna]) : $campos[$coluna];
+            }
+
+            //transforma campos de cnpj em numeros
+            if (strtolower(str_replace('_', '', substr($coluna, 0, 7))) == 'codcnpj') {
+                $campos[$coluna] = ($campos[$coluna] != '') ? $this->helper()->filtrarSomenteNumeros($campos[$coluna]) : $campos[$coluna];
             }
         }
 
