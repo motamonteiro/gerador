@@ -2,7 +2,6 @@
 
 $NAMESPACE$
 
-use $PROJETO$\Http\Controllers\Controller;
 use $PROJETO$\Services\$CLASS$Service;
 use Illuminate\Http\Request;
 
@@ -17,48 +16,48 @@ class $CLASS$Controller extends Controller
     /**
      * @var $CLASS$Service
      */
-    private $service;
+    private $$SERVICE$Service;
 
-    public function __construct($CLASS$Service $service)
+    public function __construct($CLASS$Service $$SERVICE$Service)
     {
-        $this->service = $service;
+        $this->$SERVICE$Service = $$SERVICE$Service;
     }
 
     public function index()
     {
-        return $this->service->listar();
+        return $this->$SERVICE$Service->listar();
     }
 
     public function store(Request $request)
     {
-        return $this->service->criar($request->all());
+        return $this->$SERVICE$Service->criar($request->all());
     }
 
     public function show($id)
     {
-        return $this->service->detalharPorId($id);
+        return $this->$SERVICE$Service->detalharPorId($id);
     }
 
     public function update(Request $request, $id)
     {
-        $d = $this->service->detalharPorId($id);
+        $d = $this->$SERVICE$Service->detalharPorId($id);
 
-        if(isset($d['error'])) {
+        if($this->$SERVICE$Service->existeMsgErro($d)) {
             return $d;
         }
 
-        return $this->service->atualizar($request->all(), $id);
+        return $this->$SERVICE$Service->atualizar($request->all(), $id);
     }
 
     public function destroy($id)
     {
-        $d = $this->service->detalharPorId($id);
+        $d = $this->$SERVICE$Service->detalharPorId($id);
 
-        if(isset($d['error'])) {
+        if($this->$SERVICE$Service->existeMsgErro($d)) {
             return $d;
         }
 
-        return $this->service->excluir($id);
+        return $this->$SERVICE$Service->excluir($id);
     }
 
 }

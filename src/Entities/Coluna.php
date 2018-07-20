@@ -361,6 +361,15 @@ class Coluna
             $regra .= '|confirmed';
         }
 
+        if (substr($this->getCampoMinusculo(), 0,3) == 'vlr') {
+
+            $regra = "['regex:/^(\d{1,3}(\.\d{3})*|\d+)(\,\d{2})?$/']";
+
+            if($this->isNulo() == 0){
+                $regra = "['required','regex:/^(\d{1,3}(\.\d{3})*|\d+)(\,\d{2})?$/']";
+            }
+        }
+
         return $regra;
     }
 

@@ -78,16 +78,40 @@ class Resource
                     }
                 }
 
-                $replaces = [
-                    'NOME_COLUNA_MINUSCULO_MODEL' => '$this->'.$coluna->getCampoMinusculo(),
-                    'NOME_COLUNA_MINUSCULO' => $coluna->getCampoCamelCaseLcFirst(),
-                ];
-                $stubReturnResource .= preencherStub($this->stub_path, '_RETURN_RESOURCE', $replaces);
-
-                if(substr($coluna->getCampoMinusculo(),0,4) == "dat_"){
+                if(substr($coluna->getCampoMinusculo(),0,4) == "dat_") {
                     $replaces = [
-                        'NOME_COLUNA_MINUSCULO_MODEL' => '$helper->dataFormatoDestino($this->'.$coluna->getCampoMinusculo().', $helper->FORMATO_DATA_HORA_BR)',
-                        'NOME_COLUNA_MINUSCULO' => $coluna->getCampoMinusculo()."_br",
+                        'NOME_COLUNA_MINUSCULO_MODEL' => '($this->'.$coluna->getCampoMinusculo().') ? $helper->dataFormatoDestino($this->' . $coluna->getCampoMinusculo() . ', $helper->FORMATO_DATA_HORA_BR) : '."''",
+                        'NOME_COLUNA_MINUSCULO' => $coluna->getCampoCamelCaseLcFirst(),
+                    ];
+                    $stubReturnResource .= preencherStub($this->stub_path, '_RETURN_RESOURCE', $replaces);
+                } elseif(substr($coluna->getCampoMinusculo(),0,4) == "vlr_"){
+                    $replaces = [
+                        'NOME_COLUNA_MINUSCULO_MODEL' => '($this->'.$coluna->getCampoMinusculo().') ? $helper->numeroFormatoSqlParaMoedaBr($this->' . $coluna->getCampoMinusculo() . ') : '."''",
+                        'NOME_COLUNA_MINUSCULO' => $coluna->getCampoCamelCaseLcFirst(),
+                    ];
+                    $stubReturnResource .= preencherStub($this->stub_path, '_RETURN_RESOURCE', $replaces);
+                } elseif(substr($coluna->getCampoCamelCaseLcFirst(),0,6) == "codCpf"){
+                    $replaces = [
+                        'NOME_COLUNA_MINUSCULO_MODEL' => '($this->'.$coluna->getCampoMinusculo().') ? $helper->formatarCpf($this->' . $coluna->getCampoMinusculo() . ') : '."''",
+                        'NOME_COLUNA_MINUSCULO' => $coluna->getCampoCamelCaseLcFirst(),
+                    ];
+                    $stubReturnResource .= preencherStub($this->stub_path, '_RETURN_RESOURCE', $replaces);
+                } elseif(substr($coluna->getCampoCamelCaseLcFirst(),0,7) == "codCnpj"){
+                    $replaces = [
+                        'NOME_COLUNA_MINUSCULO_MODEL' => '($this->'.$coluna->getCampoMinusculo().') ? $helper->formatarCnpj($this->' . $coluna->getCampoMinusculo() . ') : '."''",
+                        'NOME_COLUNA_MINUSCULO' => $coluna->getCampoCamelCaseLcFirst(),
+                    ];
+                    $stubReturnResource .= preencherStub($this->stub_path, '_RETURN_RESOURCE', $replaces);
+                } elseif(substr($coluna->getCampoCamelCaseLcFirst(),0,10) == "codCpfCnpj"){
+                    $replaces = [
+                        'NOME_COLUNA_MINUSCULO_MODEL' => '($this->'.$coluna->getCampoMinusculo().') ? $helper->formatarIeCpfCnpj($this->' . $coluna->getCampoMinusculo() . ') : '."''",
+                        'NOME_COLUNA_MINUSCULO' => $coluna->getCampoCamelCaseLcFirst(),
+                    ];
+                    $stubReturnResource .= preencherStub($this->stub_path, '_RETURN_RESOURCE', $replaces);
+                } else {
+                    $replaces = [
+                        'NOME_COLUNA_MINUSCULO_MODEL' => '$this->'.$coluna->getCampoMinusculo()." ?? ''",
+                        'NOME_COLUNA_MINUSCULO' => $coluna->getCampoCamelCaseLcFirst(),
                     ];
                     $stubReturnResource .= preencherStub($this->stub_path, '_RETURN_RESOURCE', $replaces);
                 }

@@ -45,8 +45,17 @@ class RepositoryEloquent
 
                     $replaces = [
                         'NOME_COLUNA_MINUSCULO' => $coluna->getCampoMinusculo(),
-                        'REGRA_VALIDATOR' => $coluna->getRegraValidator(),
+                        'REGRA_VALIDATOR' => "'".$coluna->getRegraValidator()."'",
                     ];
+
+                    if (substr($coluna->getCampoMinusculo(), 0,3) == 'vlr') {
+                        $replaces = [
+                            'NOME_COLUNA_MINUSCULO' => $coluna->getCampoMinusculo(),
+                            'REGRA_VALIDATOR' => $coluna->getRegraValidator(),
+                        ];
+                    }
+
+
 
                     $stubRules .= preencherStub($this->stub_path, '_RULES', $replaces);
                 }

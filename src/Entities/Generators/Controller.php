@@ -42,6 +42,7 @@ class Controller
                 'NAMESPACE' => 'namespace '.$this->app['config']['project_name'].'\Http\Controllers;',
                 'PROJETO' => $this->app['config']['project_name'],
                 'CLASS'     => $tabela->getNomeCamelCaseSingular(),
+                'SERVICE'     => $tabela->getNomeCamelCaseLcFirstSingular(),
             ];
             $stub = preencherStub($this->stub_path, 'controller', $replaces);
 
